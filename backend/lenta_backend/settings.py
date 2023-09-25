@@ -25,6 +25,9 @@ INSTALLED_APPS = [
     'django_filters',
     'django_extensions',
     'forecast.apps.ForecastConfig',
+    'sales.apps.SalesConfig',
+    'shops.apps.ShopsConfig',
+    'categories.apps.CategoriesConfig',
     'api.apps.APIConfig',
 ]
 

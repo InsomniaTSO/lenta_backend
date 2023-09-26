@@ -17,7 +17,7 @@ class Division(models.Model):
 
 
 class Format(models.Model):
-    """Модель для хранения информации о форматах маказинов.
+    """Модель для хранения информации о форматах магазинов.
     """
 
     type_format_id = models.CharField('id формата магазина', max_length=MAX_ID_FIELD_LENGTH)

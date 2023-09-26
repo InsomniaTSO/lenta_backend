@@ -29,5 +29,3 @@ class Product(models.Model):
     cat_id = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
     subcat_id = models.ForeignKey(Subcategory, on_delete=models.SET_NULL, null=True)
     uom_id = models.PositiveSmallIntegerField('маркер продажи на вес', choices=UOM_CHOICES)
-
-

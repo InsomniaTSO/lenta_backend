@@ -56,13 +56,13 @@ class Shop(models.Model):
     """Модель для хранения информации о магазинах.
     """
 
-    shop_id = models.CharField('id магазина', max_length=MAX_ID_FIELD_LENGTH, primary_key=True)
+    store = models.CharField('id магазина', max_length=MAX_ID_FIELD_LENGTH, primary_key=True)
     city = models.ForeignKey(City, on_delete=models.SET_NULL, related_name='shops', null=True)
-    division_code = models.ForeignKey(Division, on_delete=models.SET_NULL, related_name='shops', null=True)
+    division = models.ForeignKey(Division, on_delete=models.SET_NULL, related_name='shops', null=True)
     type_format = models.ForeignKey(Format, on_delete=models.SET_NULL, related_name='shops', null=True)
-    type_loc_id = models.ForeignKey(Location, on_delete=models.SET_NULL, related_name='shops', null=True)
-    type_size_id = models.ForeignKey(Size, on_delete=models.SET_NULL, related_name='shops', null=True)
+    loc = models.ForeignKey(Location, on_delete=models.SET_NULL, related_name='shops', null=True)
+    size = models.ForeignKey(Size, on_delete=models.SET_NULL, related_name='shops', null=True)
     is_active = models.PositiveSmallIntegerField('флаг активного магазина', choices=FLAG_CHOICES)
 
     def __str__(self):
-        return str(self.store_id) 
+        return str(self.store) 

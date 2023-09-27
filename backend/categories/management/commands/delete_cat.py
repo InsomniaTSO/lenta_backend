@@ -3,8 +3,8 @@ from categories.v1.models import Group, Category, Subcategory, Product
 
 
 class Command(BaseCommand):
-    """Удаляет все ингредиенты из базы данных."""
-    help = "python manage.py delete_shops"
+    """Удаляет все товары из базы данных."""
+    help = "python manage.py delete_cat"
 
     def handle(self, *args, **options):
         print("Delete shops data")

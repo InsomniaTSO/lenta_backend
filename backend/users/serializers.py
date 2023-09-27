@@ -16,14 +16,7 @@ class CustomUserSerializer(UserSerializer):
     class Meta:
         model = User
         fields = ('email', 'id', 'username',
-                  'first_name', 'last_name',
-                  'is_subscribed')
-
-    def is_subscribed_user(self, obj):
-        user = self.context['request'].user
-        return (
-            user.is_authenticated
-            and obj.subscribing.filter(user=user).exists())
+                  'first_name', 'last_name')
 
 
 class SignupSerializer(UserCreateSerializer):

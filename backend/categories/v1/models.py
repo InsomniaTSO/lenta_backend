@@ -33,11 +33,11 @@ class Product(models.Model):
     """Иерархия для товара.
     """
 
-    sku_id = models.CharField('id товара', max_length=MAX_ID_FIELD_LENGTH, primary_key=True)
-    group = models.ForeignKey(Group, on_delete=models.SET_NULL, null=True)
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
-    subcategory = models.ForeignKey(Subcategory, on_delete=models.SET_NULL, null=True)
-    uom_id = models.PositiveSmallIntegerField('маркер продажи на вес', choices=UOM_CHOICES)
+    sku = models.CharField('id товара', max_length=MAX_ID_FIELD_LENGTH, primary_key=True)
+    group = models.ForeignKey(Group, on_delete=models.SET_NULL, related_name='products', null=True)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, related_name='products', null=True)
+    subcategory = models.ForeignKey(Subcategory, on_delete=models.SET_NULL, related_name='products', null=True)
+    uom = models.PositiveSmallIntegerField('маркер продажи на вес', choices=UOM_CHOICES)
 
     def __str__(self):
-        return str(self.sku_id)
+        return str(self.sku)

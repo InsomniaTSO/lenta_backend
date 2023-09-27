@@ -34,7 +34,7 @@ class User(AbstractUser):
         max_length=100,
     )
 
-    REQUIRED_FIELDS = ('email', 'first_name', 'last_name',)
+    REQUIRED_FIELDS = ('email',)
 
     class Meta:
         ordering = ('username',)

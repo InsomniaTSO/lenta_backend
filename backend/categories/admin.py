@@ -30,6 +30,6 @@ class SubcategoryAdmin(admin.ModelAdmin):
 @register(Product)
 class ProductAdmin(admin.ModelAdmin):
     """Админка товара."""
-    list_display = ('sku_id', 'group', 'category', 'subcategory', 'uom_id')
-    search_fields = ('sku_id', 'group', 'category', 'subcategory', 'uom_id')
+    list_display = ('sku', 'group', 'category', 'subcategory', 'uom')
+    search_fields = ('sku', 'group', 'category', 'subcategory', 'uom')
     empty_value_display = '-пусто-'

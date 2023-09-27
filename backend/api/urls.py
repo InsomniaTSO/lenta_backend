@@ -1,13 +1,15 @@
 from django.urls import include, path
 from djoser.views import TokenDestroyView
 from rest_framework.routers import DefaultRouter
-from categories.v1.views import CategoriesViewSet
-from users.views import CustomTokenCreateView
+from categories.v1.views import ProductViewSet
+from shops.v1.views import ShopViewSet
+from users.views import CustomTokenCreateView, CustomUserViewSet
 
 v1_router = DefaultRouter()
-v1_router.register('categories', CategoriesViewSet, basename='categories')
+v1_router.register('users', CustomUserViewSet, basename='user')
+v1_router.register('categories', ProductViewSet, basename='categories')
 # v1_router.register('sales', SalesViewSet, basename='sales')
-# v1_router.register('shops', ShopsViewSet, basename='shops')
+v1_router.register('shops', ShopViewSet, basename='shops')
 # v1_router.register('forecast', ForecastViewSet, basename='forecast')
 
 urlpatterns = [

@@ -3,7 +3,7 @@ from shops.v1.models import City, Division, Format, Location, Shop, Size
 
 
 class Command(BaseCommand):
-    """Удаляет все ингредиенты из базы данных."""
+    """Удаляет все магазины из базы данных."""
     help = "python manage.py delete_shops"
 
     def handle(self, *args, **options):

@@ -1,10 +1,10 @@
 from rest_framework import serializers
-from .models import Category
+from categories.v1.models import Product
 
 
-class CategoriesViewSerializer(serializers.ModelSerializer):
-    """Сериализатор тегов."""
+class ProductViewSerializer(serializers.ModelSerializer):
+    """Сериализатор товарной иерархии."""
     
     class Meta:
-        model = Category
-        fields = ('sku_id', 'group', 'cat_id', 'subcat_id', 'subcat_id', 'uom_id')
+        model = Product
+        fields = ('sku', 'group', 'category', 'subcategory', 'uom')

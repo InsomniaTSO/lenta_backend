@@ -1,11 +1,12 @@
 from rest_framework import viewsets
 from rest_framework.permissions import AllowAny
-from .models import Category
-from .serializers import CategoriesViewSerializer
+from categories.v1.models import Product
+from categories.v1.serializers import ProductViewSerializer
 
-class CategoriesViewSet(viewsets.ReadOnlyModelViewSet):
-    """Представление модели иерархии."""
-    queryset = Category.objects.all()
-    serializer_class = CategoriesViewSerializer
+class ProductViewSet(viewsets.ReadOnlyModelViewSet):
+    """Представление модели товарной иерархии."""
+
+    queryset = Product.objects.all()
+    serializer_class = ProductViewSerializer
     permission_classes = (AllowAny,)
     pagination_class = None

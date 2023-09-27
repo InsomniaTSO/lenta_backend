@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 HOME_DIR = BASE_DIR.replace('backend', '')
 
 SECRET_KEY = os.getenv('SECRET_KEY', default='xxxxxxxxxx')
@@ -11,6 +12,8 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
+AUTH_USER_MODEL = 'users.User'
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -24,6 +27,7 @@ INSTALLED_APPS = [
     'djoser',
     'django_filters',
     'django_extensions',
+    'users.apps.UsersConfig',
     'forecast.apps.ForecastConfig',
     'sales.apps.SalesConfig',
     'shops.apps.ShopsConfig',
@@ -88,6 +92,32 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend', ],
+}
+
+
+DJOSER = {
+    'HIDE_USERS': False,
+    'LOGIN_FIELD': 'email',
+    'SERIALIZERS': {
+        'user': 'users.serializers.CustomUserSerializer',
+        'user_create': 'users.serializers.SignupSerializer',
+        'token_create': 'users.serializers.CustomTokenCreateSerializer',
+    },
+    'PERMISSIONS': {
+        'user_list': ['rest_framework.permissions.IsAuthenticatedOrReadOnly'],
+        'user': ['rest_framework.permissions.IsAuthenticatedOrReadOnly'],
+    }
+}
 
 LANGUAGE_CODE = 'ru'
 

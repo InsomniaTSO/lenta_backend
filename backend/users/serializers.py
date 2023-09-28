@@ -11,7 +11,6 @@ from .models import User
 
 class CustomUserSerializer(UserSerializer):
     """Сериализатор пользователей."""
-    # is_subscribed = SerializerMethodField('is_subscribed_user')
 
     class Meta:
         model = User
@@ -21,6 +20,7 @@ class CustomUserSerializer(UserSerializer):
 
 class SignupSerializer(UserCreateSerializer):
     """Сериализатор регистрации пользователя."""
+
     class Meta:
         model = User
         fields = ('id', 'username', 'email',
@@ -38,6 +38,7 @@ class SignupSerializer(UserCreateSerializer):
 
 class CustomTokenCreateSerializer(TokenCreateSerializer):
     """Сериализатор получения токена."""
+
     class Meta:
         model = User
         fields = (

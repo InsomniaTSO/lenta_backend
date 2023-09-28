@@ -4,7 +4,10 @@ from .models import Forecast
 from .serializers import ForecastPostSerializer, ForecastGetSerializer
 
 class ForecastViewSet(viewsets.ModelViewSet):
+    """Представление модели прогноза.
+    """
     queryset = Forecast.objects.all()
+    http_method_names = ['get', 'post']
     
     def get_serializer_class(self):
         if self.action == 'create':

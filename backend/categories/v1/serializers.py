@@ -2,7 +2,7 @@ from rest_framework import serializers
 from categories.v1.models import Product
 
 
-class ProductViewSerializer(serializers.ModelSerializer):
+class ProductSerializer(serializers.ModelSerializer):
     """Сериализатор товарной иерархии."""
     
     class Meta:

@@ -1,5 +1,8 @@
 from django.core.management import BaseCommand
 from sales.v1.models import Sales
+import logging
+
+logging.basicConfig(level=logging.INFO)
 
 
 class Command(BaseCommand):
@@ -7,5 +10,5 @@ class Command(BaseCommand):
     help = "python manage.py delete_sales"
 
     def handle(self, *args, **options):
-        print("Delete shops data")
+        logging.info('Данные для продаж удалены')
         Sales.objects.all().delete()

@@ -18,4 +18,4 @@ class Sales(models.Model):
     promo_sales_in_rub = models.DecimalField('продажи в рублях промо', max_digits=MAX_DIGITS, decimal_places=DECIMAL_PLACES)
 
     def __str__(self):
-        return (str(self.shop.shop_id) + '-' + str(self.product.sku_id))
+        return f'Sales: Shop ID - {self.shop.store}, Product SKU - {self.product.sku}'

@@ -1,7 +1,8 @@
 from rest_framework import viewsets
+from rest_framework.permissions import AllowAny
 from shops.v1.serializers import ShopsSerializer
 from shops.v1.models import Shop
-from rest_framework.permissions import AllowAny
+from .filters import ShopFilter
 
 
 class ShopViewSet(viewsets.ModelViewSet):
@@ -11,3 +12,4 @@ class ShopViewSet(viewsets.ModelViewSet):
     serializer_class = ShopsSerializer
     permission_classes = (AllowAny,)
     pagination_class = None
+    filterset_class = ShopFilter

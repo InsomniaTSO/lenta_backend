@@ -1,8 +1,11 @@
-
 import os
 import csv
 from django.core.management import BaseCommand
 from categories.v1.models import Group, Category, Subcategory, Product
+import logging
+
+logging.basicConfig(level=logging.INFO)
+
 
 class Command(BaseCommand):
     """Добавляет данные из data/st_df.csv в базу данных."""
@@ -11,9 +14,9 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         path_file = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname( __file__ )))), 'data/pr_df.csv')
         if Product.objects.exists():
-            print('Данные товарной иерархии уже загружены')
+            logging.info('Данные товарной иерархии уже загружены')
             return
-        print("Загрузка данных товарной иерархии")
+        logging.info('Загрузка данных товарной иерархии')
         with open(path_file, encoding='utf-8') as file:
             csvfilereader = csv.reader(file, delimiter=",")
             next(csvfilereader)
@@ -27,3 +30,4 @@ class Command(BaseCommand):
                                            category=category, 
                                            subcategory=subcategory, 
                                            uom=uom)
+        logging.info('Загрузка завершена успешно')

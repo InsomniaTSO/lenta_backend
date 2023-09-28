@@ -1,9 +1,12 @@
-
 import os
 from pathlib import Path
 import csv
 from django.core.management import BaseCommand
 from shops.v1.models import City, Division, Format, Location, Shop, Size
+import logging
+
+logging.basicConfig(level=logging.INFO)
+
 
 class Command(BaseCommand):
     """Добавляет данные из data/st_df.csv в базу данных."""
@@ -12,9 +15,9 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         path_file = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname( __file__ )))), 'data/st_df.csv')
         if Shop.objects.exists():
-            print('Данные для магизинов уже загружены')
+            logging.info('Данные для магазинов уже загружены')
             return
-        print("Загрузка данных магизинов")
+        logging.info('Загрузка данных магазинов')
         with open(path_file, encoding='utf-8') as file:
             csvfilereader = csv.reader(file, delimiter=",")
             next(csvfilereader)
@@ -32,3 +35,4 @@ class Command(BaseCommand):
                                            loc=location, 
                                            size=size, 
                                            is_active=is_active)
+        logging.info('Загрузка завершена успешно')

@@ -11,7 +11,7 @@ from .models import User
 
 class CustomUserSerializer(UserSerializer):
     """Сериализатор пользователей."""
-    is_subscribed = SerializerMethodField('is_subscribed_user')
+    # is_subscribed = SerializerMethodField('is_subscribed_user')
 
     class Meta:
         model = User

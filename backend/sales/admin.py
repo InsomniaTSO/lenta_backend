@@ -6,7 +6,7 @@ from sales.v1.models import Sales
 @register(Sales)
 class SalesAdmin(admin.ModelAdmin):
     """Админка продаж."""
-    list_display = ('shop',  'product', 'date', 'sales_type_id', 'sales_in_units', 
-                    'promo_sales_in_units', 'sales_in_rub', 'promo_sales_in_rub')
-    search_fields = ('shop',  'product', 'date', 'sales_type_id')
+    list_display = ('shop',  'product', 'date', 'sales_type', 'sales_units', 
+                    'sales_units_promo', 'sales_rub', 'sales_run_promo')
+    search_fields = ('shop',  'product', 'date', 'sales_type')
     empty_value_display = '-пусто-'

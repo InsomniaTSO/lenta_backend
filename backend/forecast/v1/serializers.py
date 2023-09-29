@@ -5,32 +5,18 @@ from shops.v1.models import Shop
 
 
 class ForecastPostSerializer(serializers.Serializer): 
-    store = serializers.CharField(write_only=True) 
-    forecast_date = serializers.DateField(write_only=True) 
-    forecast = serializers.DictField( 
-        child=serializers.DictField( 
-            child=serializers.IntegerField(), 
-        ) 
-    ) 
+    pass
  
-    def create(self, validated_data): 
-        store_id = validated_data['store'] 
-        # forecast_date = validated_data['forecast_date'] 
-        forecast_data = validated_data['forecast']
-        for sku, sales_units in forecast_data.items(): 
-            product = Product.objects.get(sku=sku) 
-            store = Shop.objects.get(store=store_id)
-            for date, units in sales_units.items(): 
-                Forecast.objects.create( 
-                    store=store, 
-                    product=product, 
-                    date=date, 
-                    target=units 
-                )
-        return validated_data 
- 
-class ForecastGetSerializer(serializers.ModelSerializer):    
-    
-    class Meta: 
-        model = Forecast        
-        fields = ('store', 'product', 'date', 'target')
+
+class ForecastGetSerializer(serializers.Serializer): 
+    store = serializers.CharField()
+    sku = serializers.CharField()  
+    forecast_date = serializers.DateField() 
+    forecast = serializers.DictField(child=serializers.IntegerField())
+
+    def get_forecast(self, obj_list):
+        forecast_dict = {}
+        for obj in obj_list:
+            date_str = obj.date.strftime('%Y-%m-%d')
+            forecast_dict[date_str] = obj.target
+        return forecast_dict

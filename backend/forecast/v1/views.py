@@ -24,9 +24,14 @@ class ForecastViewSet(viewsets.ModelViewSet):
             return ForecastPostSerializer
         return ForecastGetSerializer
     
-    def create(self, request, *args, **kwargs):
-        pass
-    
+    def create(self, request, *args, **kwargs):  
+        serializer = self.get_serializer(data=request.data)
+        print(request.data)
+        if serializer.is_valid():  
+            serializer.save()  
+            return Response({"success": "Прогноз успешно сохранен"}, status=status.HTTP_201_CREATED)  
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+  
     def list(self, request, *args, **kwargs):
         store_id = self.request.query_params.get('store')
         sku_id = self.request.query_params.get('sku') 

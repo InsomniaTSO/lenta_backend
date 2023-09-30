@@ -9,7 +9,7 @@ class Forecast(models.Model):
 
     store = models.ForeignKey(Shop, on_delete=models.CASCADE, related_name='forecast')
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='forecast')
-    date = models.DateField('дата')
+    date = models.DateField('дата прогноза')
     target = models.PositiveSmallIntegerField('спрос в шт')
 
     def __str__(self):

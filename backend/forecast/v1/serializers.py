@@ -1,48 +1,61 @@
-from rest_framework import serializers 
+from rest_framework import serializers
+from datetime import timedelta
 from .models import Forecast
 from categories.v1.models import Product
-from shops.v1.models import Shop
 
 
-class ForecastPostSerializer(serializers.Serializer):  
-    store = serializers.CharField(help_text='Укажите уникальный идентификатор магазина')  
-    forecast_date = serializers.DateField(help_text='Укажите дату прогноза в формате YYYY-MM-DD')  
-    forecast = serializers.DictField(  
-        help_text='Укажите прогноз в формате {"SKU": {"Дата": Количество проданных единиц}}',
-        child=serializers.DictField(  
-            help_text='Укажите SKU и соответствующий ему прогноз',
-            child=serializers.IntegerField(help_text='Укажите дату и ожидаемое количество проданных единиц'),
-        ) 
-    ) 
-     
-    def create(self, validated_data): 
-        store_id = validated_data.get('store') 
-        # forecast_date = validated_data.get('forecast_date') 
-        forecast_data = validated_data.get('forecast') 
-         
-        store = Shop.objects.get(store=store_id) 
-         
-        for sku, sales_units in forecast_data.items(): 
-            product = Product.objects.get(sku=sku) 
-            for date, target in sales_units.items(): 
-                Forecast.objects.create( 
-                    store=store, 
-                    product=product, 
-                    date=date, 
-                    target=target 
-                ) 
-        return validated_data
+class ForecastPostSerializer(serializers.ModelSerializer):
+    """Сериализатор для отправки данных прогноза. 
+    Позволяет отправить информацию о магазине, дате прогноза и прогнозе продаж.
+    """
 
+    class Meta:
+        model = Forecast
+        fields = ['store', 'forecast_date', 'forecast']
 
-class ForecastGetSerializer(serializers.Serializer): 
-    store = serializers.CharField()
-    sku = serializers.CharField()  
-    forecast_date = serializers.DateField() 
-    forecast = serializers.DictField(child=serializers.IntegerField())
+    def validate(self, data): 
+        forecast_data = data.get('forecast') 
+        # Проверяем наличие 'sku' в данных
+        if 'sku' not in forecast_data: 
+            raise serializers.ValidationError({'forecast': 'Поле "sku" отсутствует.'})
+        product_sku = forecast_data.get('sku') 
+        # Проверяем, что продукт с таким SKU существует
+        if not Product.objects.filter(sku=product_sku).exists(): 
+            raise serializers.ValidationError({'sku': 'Неверный SKU.'}) 
+        data['product'] = Product.objects.get(sku=product_sku)
+        # Проверяем наличие 'sales_units' в данных
+        if 'sales_units' not in forecast_data: 
+            raise serializers.ValidationError({'forecast': 'Поле "sales_units" отсутствует.'})
+        # Проверяем, что первая дата в 'sales_units' соответствует 'forecast_date'
+        first_sales_date = next(iter(forecast_data['sales_units']))
+        if first_sales_date != str(data['forecast_date']):
+            raise serializers.ValidationError({
+                'forecast_date': f'Первая дата в "sales_units" ({first_sales_date}) не совпадает с "forecast_date" ({data["forecast_date"]}).'
+            })
+        # # Проверяем, что прогноз составлен на 14 дней
+        # sales_dates = list(forecast['sales_units'].keys())
+        # if len(sales_dates) != 14:
+        #     raise serializers.ValidationError({
+        #         'forecast': 'Данные "sales_units" должны содержать прогноз на 14 дней.'
+        #     })
+        # # Проверяем, что даты в прогнозе идут по порядку
+        # current_date = data['forecast_date']
+        # for date_str in sales_dates:
+        #     if date_str != str(current_date):
+        #         raise serializers.ValidationError({
+        #             'forecast': f'Данные "sales_units" содержат неверную дату {date_str}. Ожидалось {current_date}.'
+        #         })
+        #     current_date += timedelta(days=1)
+        return data
 
-    def get_forecast(self, obj_list):
-        forecast_dict = {}
-        for obj in obj_list:
-            date_str = obj.date.strftime('%Y-%m-%d')
-            forecast_dict[date_str] = obj.target
-        return forecast_dict
+class ForecastGetSerializer(serializers.ModelSerializer):
+    """Сериализатор для получения данных прогноза. 
+    Предоставляет информацию о магазине, продукте и прогнозе продаж.
+    """
+    store = serializers.CharField(source='store.store')
+    sku = serializers.CharField(source='product.sku')
+    forecast = serializers.DictField(source='forecast.sales_units')
+    
+    class Meta:
+        model = Forecast
+        fields = ['store', 'sku', 'forecast', 'forecast']

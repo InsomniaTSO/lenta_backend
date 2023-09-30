@@ -1,27 +1,25 @@
 from django.db import models
 from shops.v1.models import Shop
 from categories.v1.models import Product
+from django.db.models import JSONField
 
 
-class Forecast(models.Model):
-    """Модель для хранения результатов прогноза.
-    """
+class Forecast(models.Model):  
+    """Модель для хранения информации о прогнозе продаж."""  
+    store = models.ForeignKey(Shop, on_delete=models.CASCADE, related_name='forecasts')  
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='forecasts')  
+    forecast_date = models.DateField('Дата начала прогноза') 
+    forecast = JSONField('Прогноз на 14 дней', default=dict)
+      
+    class Meta:  
+        verbose_name = 'Прогноз продаж'  
+        verbose_name_plural = 'Прогнозы продаж'  
+        constraints = [  
+            models.UniqueConstraint(  
+                fields=['store', 'forecast_date', 'product'],  
+                name='unique_forecast'  
+            ),  
+        ] 
 
-    store = models.ForeignKey(Shop, on_delete=models.CASCADE, related_name='forecast')
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='forecast')
-    date = models.DateField('дата прогноза')
-    target = models.PositiveSmallIntegerField('спрос в шт')
-
-    def __str__(self):
-        return f'Прогноз для магазина {self.store} по продукту {self.product}'
-  
-
-class ForPrediction(models.Model):
-    """Модель для хранения данных, необходимых для создания прогноза.
-    """
-
-    store = models.ForeignKey(Shop, on_delete=models.CASCADE, related_name='for_prediction')
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='for_prediction')
-
-    def __str__(self):
-        return f'Данные для прогноза для магазина {self.store} по продукту {self.product}'
+    def __str__(self): 
+        return f'Прогноз для магазина {self.store}, продукта {self.product} начиная с {self.forecast_date}'

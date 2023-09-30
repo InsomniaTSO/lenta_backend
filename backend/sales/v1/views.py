@@ -24,39 +24,33 @@ class SalesViewSet(viewsets.ModelViewSet):
         raise MethodNotAllowed('GET', detail=ONLY_LIST_MSG)
     
     def get_serializer_class(self):
-        """
-        Возвращает сериализатор в зависимости от
+        """Возвращает сериализатор в зависимости от
         используемого метода.
         """
-        if self.action == "create":
+        if self.action == 'create':
             return SalesFactSerializer
         return self.serializer_class
     
     def get_queryset(self):
-        print(self.request.query_params)
         store_id = self.request.query_params.get('store')
         sku_id = self.request.query_params.get('sku')
         if not store_id or not sku_id:
-            print('Ой')
             return Sales.objects.none()
         queryset = Sales.objects.filter(shop=store_id, product=sku_id)
-        print(queryset)
         return queryset
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
         if not queryset.exists():
             return Response(
-                {"error": "Не найдены данные с указанными параметрами"},
+                {'error': 'Не найдены данные с указанными параметрами'},
                 status=status.HTTP_404_NOT_FOUND
             )
         serializer = self.get_serializer(queryset, many=True)
-        return Response({"data": serializer.data[1]})
+        return Response({'data': serializer.data[1]})
 
     def create(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-
-

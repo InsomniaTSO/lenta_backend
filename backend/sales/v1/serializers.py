@@ -1,10 +1,18 @@
-from rest_framework import serializers
-from sales.v1.models import Sales
+import logging
+
+from categories.v1.models import Product
+from shops.v1.serializers import ShopsSerializer
+from django.shortcuts import get_object_or_404
 from lenta_backend.consatants import DECIMAL_PLACES, MAX_DIGITS
+from rest_framework import serializers
+from rest_framework.response import Response
+from sales.v1.models import Sales
+from shops.v1.models import Shop
 
 
 class SalesSerializer(serializers.ModelSerializer):
-    """Основной сериализатор для объектов Sales. Включает в себя информацию фактических данных о продажах. 
+    """Основной сериализатор для объектов Sales. 
+       Включает в себя информацию фактических данных о продажах. 
     """
     
     class Meta: 
@@ -28,10 +36,14 @@ class SalesGroupSerializer(serializers.ModelSerializer):
     def get_fact(self, obj):
         shop = obj.shop
         product = obj.product
+        date_start = self.context.get('date_start')
+        date_end = self.context.get('date_end')
         sales = Sales.objects.filter(shop=shop, product=product)
+        if date_start and date_end:
+            sales = sales.filter(date__range=(date_start, date_end))
         sales_serializer = SalesSerializer(sales, many=True)
         return sales_serializer.data
-
+    
 
 class FactSerializer(serializers.ModelSerializer):
     """Сериализатор для представления информации о фактических продажах. 
@@ -41,7 +53,7 @@ class FactSerializer(serializers.ModelSerializer):
     sales_units = serializers.IntegerField() 
     sales_units_promo = serializers.IntegerField() 
     sales_rub = serializers.DecimalField(MAX_DIGITS, DECIMAL_PLACES) 
-    sales_rub_promo = serializers.DecimalField(MAX_DIGITS, DECIMAL_PLACES) 
+    sales_run_promo = serializers.DecimalField(MAX_DIGITS, DECIMAL_PLACES) 
 
     class Meta:
         model = Sales
@@ -50,29 +62,34 @@ class FactSerializer(serializers.ModelSerializer):
                   'sales_run_promo')
 
 
-class SalesFactSerializer(serializers.Serializer):
-    store = serializers.StringRelatedField(source='shop.store')
-    sku = serializers.StringRelatedField(source='product.sku')
-    fact = serializers.ListField(child=SalesSerializer())
+class SalesFactSerializer(serializers.ModelSerializer):
+    
+    store = serializers.CharField()
+    sku = serializers.CharField()
+    fact = serializers.ListField(child=FactSerializer())
 
     class Meta:
         model = Sales
-        fields = ('store', 'sku', 'date', 'sales_type', 'sales_units',
-                  'sales_units_promo', 'sales_rub', 
-                  'sales_run_promo'
-                  )
+        fields = ('store', 'sku', 'fact')
         
     def create(self, validated_data):
-        store = validated_data.get('store')
-        sku = validated_data.get('sku')
+        store = Shop.objects.get(store=validated_data.get('store'))
+        sku = Product.objects.get(sku=validated_data.get('sku'))
         fact = validated_data.get('fact')
         for f in fact:
-            sale = Sales.objects.create(shop=store, 
-                                        product=sku, 
-                                        date=f['date'],
-                                        sales_type=f['sales_type'],
-                                        sales_units=f['sales_units'],
-                                        sales_units_promo=f['sales_units_promo'],
-                                        sales_rub=f['sales_rub'],
-                                        sales_run_promo=f['sales_run_promo'])
-            return validated_data
+            if Sales.objects.filter(shop=store, product=sku, date=f['date']).exists():
+                Sales.objects.filter(shop=store, product=sku, 
+                                     date=f['date']).update(sales_type=f['sales_type'],
+                                     sales_units=f['sales_units'],
+                                     sales_units_promo=f['sales_units_promo'],
+                                     sales_rub=f['sales_rub'],
+                                     sales_run_promo=f['sales_run_promo'])
+            else:
+                Sales.objects.create(shop=store, product=sku, 
+                                     date=f['date'], sales_type=f['sales_type'],
+                                     sales_units=f['sales_units'],
+                                     sales_units_promo=f['sales_units_promo'],
+                                     sales_rub=f['sales_rub'],
+                                     sales_run_promo=f['sales_run_promo'])
+            
+        return validated_data

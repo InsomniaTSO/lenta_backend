@@ -2,22 +2,22 @@ import django_filters
 from .models import Shop
 
 class ShopFilter(django_filters.FilterSet):
-    store = django_filters.CharFilter(lookup_expr='icontains')
-    city__city_id = django_filters.CharFilter(lookup_expr='icontains')
-    division__division_code_id = django_filters.CharFilter(lookup_expr='icontains')
-    type_format__type_format_id = django_filters.NumberFilter()
-    loc__type_loc_id = django_filters.NumberFilter()
-    size__type_size_id = django_filters.NumberFilter()
-    is_active = django_filters.NumberFilter()
+    store = django_filters.AllValuesMultipleFilter(lookup_expr='icontains')
+    city = django_filters.AllValuesMultipleFilter(field_name='city__city_id')
+    division = django_filters.AllValuesMultipleFilter(field_name='division__division_code_id')
+    type_format = django_filters.AllValuesMultipleFilter(field_name='type_format__type_format_id')
+    loc= django_filters.AllValuesMultipleFilter(field_name='loc__type_loc_id')
+    size = django_filters.AllValuesMultipleFilter(field_name='size__type_size_id')
+    is_active = django_filters.NumberFilter(lookup_expr='icontains')
 
     class Meta:
         model = Shop
         fields = [
             'store',
-            'city__city_id',
-            'division__division_code_id',
-            'type_format__type_format_id',
-            'loc__type_loc_id',
-            'size__type_size_id',
+            'city',
+            'division',
+            'type_format',
+            'loc',
+            'size',
             'is_active'
         ]

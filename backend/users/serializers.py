@@ -3,7 +3,6 @@ from django.contrib.auth import authenticate
 from djoser.serializers import (TokenCreateSerializer, UserCreateSerializer,
                                 UserSerializer)
 from rest_framework import serializers
-from rest_framework.serializers import SerializerMethodField
 
 from lenta_backend.consatants import FORBIDDEN_NAME
 from .models import User

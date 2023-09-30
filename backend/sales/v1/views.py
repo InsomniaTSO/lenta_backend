@@ -2,11 +2,8 @@ from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework.exceptions import MethodNotAllowed
-from django.shortcuts import get_object_or_404
 from lenta_backend.consatants import ONLY_LIST_MSG
 from sales.v1.models import Sales
-from shops.v1.models import Shop
-from categories.v1.models import Product 
 from sales.v1.serializers import SalesGroupSerializer, SalesFactSerializer
 from api.pagination import LimitPageNumberPagination
 
@@ -20,6 +17,7 @@ class SalesViewSet(viewsets.ModelViewSet):
     http_method_names = ['get', 'post']
     pagination_class = LimitPageNumberPagination
 
+
     def retrieve(self, request):
         raise MethodNotAllowed('GET', detail=ONLY_LIST_MSG)
     
@@ -31,26 +29,36 @@ class SalesViewSet(viewsets.ModelViewSet):
             return SalesFactSerializer
         return self.serializer_class
     
-    def get_queryset(self):
+    def get_serializer_context(self):
+        context = {'request': self.request}
+        date_start = self.request.GET.get('date_start')
+        date_end = self.request.GET.get('date_end')
+        if date_start and date_end:
+            context['date_start'] = date_start
+            context['date_end'] = date_end
+        return context
+    
+    def get_instance(self):
         store_id = self.request.query_params.get('store')
         sku_id = self.request.query_params.get('sku')
         if not store_id or not sku_id:
             return Sales.objects.none()
-        queryset = Sales.objects.filter(shop=store_id, product=sku_id)
-        return queryset
+        insanse = Sales.objects.filter(shop=store_id, product=sku_id).first()
+        return insanse
 
     def list(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
-        if not queryset.exists():
+        instance = self.get_instance()
+        if not instance:
             return Response(
                 {'error': 'Не найдены данные с указанными параметрами'},
                 status=status.HTTP_404_NOT_FOUND
             )
-        serializer = self.get_serializer(queryset, many=True)
-        return Response({'data': serializer.data[1]})
+        serializer = self.get_serializer(instance) 
+        return Response({"data": serializer.data})
 
     def create(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        serializer.save()
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)

@@ -22,11 +22,10 @@ class SalesViewSet(viewsets.ModelViewSet):
         raise MethodNotAllowed('GET', detail=ONLY_LIST_MSG)
     
     def get_serializer_class(self):
-        """
-        Возвращает сериализатор в зависимости от
+        """Возвращает сериализатор в зависимости от
         используемого метода.
         """
-        if self.action == "create":
+        if self.action == 'create':
             return SalesFactSerializer
         return self.serializer_class
     
@@ -51,7 +50,7 @@ class SalesViewSet(viewsets.ModelViewSet):
         instance = self.get_instance()
         if not instance:
             return Response(
-                {"error": "Не найдены данные с указанными параметрами"},
+                {'error': 'Не найдены данные с указанными параметрами'},
                 status=status.HTTP_404_NOT_FOUND
             )
         serializer = self.get_serializer(instance) 
@@ -63,5 +62,3 @@ class SalesViewSet(viewsets.ModelViewSet):
         serializer.save()
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-
-

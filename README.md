@@ -23,7 +23,6 @@ python manage.py makemigrations forecast&&
 python manage.py makemigrations shops&&
 python manage.py makemigrations users&&
 python manage.py migrate &&
-python manage.py createsuperuser &&
 python manage.py load_shops &&
 python manage.py load_cat &&
 python manage.py load_sales

@@ -18,7 +18,6 @@ class SalesViewSet(viewsets.ModelViewSet):
     http_method_names = ['get', 'post']
     pagination_class = LimitPageNumberPagination
 
-
     def retrieve(self, request):
         raise MethodNotAllowed('GET', detail=ONLY_LIST_MSG)
     
@@ -48,6 +47,7 @@ class SalesViewSet(viewsets.ModelViewSet):
             context['date_end'] = date_end
         return context
     
+
     def get_queryset(self):
         """Получает экземпляр объекта Sales c фильтрам по
            магазину и товару.

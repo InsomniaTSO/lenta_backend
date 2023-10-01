@@ -1,0 +1,1063 @@
+openapi: 3.0.2
+info:
+  title: ''
+  version: ''
+paths:
+  /api/v1/users/:
+    get:
+      operationId: listUsers
+      description: "\u0412\u044C\u044E\u0441\u0435\u0442 \u043F\u043E\u043B\u044C\u0437\
+        \u043E\u0432\u0430\u0442\u0435\u043B\u0435\u0439."
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 123
+                  next:
+                    type: string
+                    nullable: true
+                    format: uri
+                    example: http://api.example.org/accounts/?offset=400&limit=100
+                  previous:
+                    type: string
+                    nullable: true
+                    format: uri
+                    example: http://api.example.org/accounts/?offset=200&limit=100
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CustomUser'
+          description: ''
+      tags:
+      - api
+    post:
+      operationId: createUser
+      description: "\u0412\u044C\u044E\u0441\u0435\u0442 \u043F\u043E\u043B\u044C\u0437\
+        \u043E\u0432\u0430\u0442\u0435\u043B\u0435\u0439."
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Signup'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Signup'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Signup'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Signup'
+          description: ''
+      tags:
+      - api
+  /api/v1/users/{id}/:
+    get:
+      operationId: retrieveUser
+      description: "\u0412\u044C\u044E\u0441\u0435\u0442 \u043F\u043E\u043B\u044C\u0437\
+        \u043E\u0432\u0430\u0442\u0435\u043B\u0435\u0439."
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: "A unique integer value identifying this \u041F\u043E\u043B\u044C\
+          \u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044C."
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomUser'
+          description: ''
+      tags:
+      - api
+    put:
+      operationId: updateUser
+      description: "\u0412\u044C\u044E\u0441\u0435\u0442 \u043F\u043E\u043B\u044C\u0437\
+        \u043E\u0432\u0430\u0442\u0435\u043B\u0435\u0439."
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: "A unique integer value identifying this \u041F\u043E\u043B\u044C\
+          \u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044C."
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomUser'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CustomUser'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CustomUser'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomUser'
+          description: ''
+      tags:
+      - api
+    patch:
+      operationId: partialUpdateUser
+      description: "\u0412\u044C\u044E\u0441\u0435\u0442 \u043F\u043E\u043B\u044C\u0437\
+        \u043E\u0432\u0430\u0442\u0435\u043B\u0435\u0439."
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: "A unique integer value identifying this \u041F\u043E\u043B\u044C\
+          \u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044C."
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomUser'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CustomUser'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CustomUser'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomUser'
+          description: ''
+      tags:
+      - api
+    delete:
+      operationId: destroyUser
+      description: "\u0412\u044C\u044E\u0441\u0435\u0442 \u043F\u043E\u043B\u044C\u0437\
+        \u043E\u0432\u0430\u0442\u0435\u043B\u0435\u0439."
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: "A unique integer value identifying this \u041F\u043E\u043B\u044C\
+          \u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044C."
+        schema:
+          type: string
+      responses:
+        '204':
+          description: ''
+      tags:
+      - api
+  /api/v1/categories/:
+    get:
+      operationId: listProducts
+      description: "\u041F\u0440\u0435\u0434\u0441\u0442\u0430\u0432\u043B\u0435\u043D\
+        \u0438\u0435 \u043C\u043E\u0434\u0435\u043B\u0438 \u0442\u043E\u0432\u0430\
+        \u0440\u043D\u043E\u0439 \u0438\u0435\u0440\u0430\u0440\u0445\u0438\u0438."
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: sku
+        required: false
+        in: query
+        description: sku
+        schema:
+          type: string
+      - name: group
+        required: false
+        in: query
+        description: group
+        schema:
+          type: string
+      - name: category
+        required: false
+        in: query
+        description: category
+        schema:
+          type: string
+      - name: subcategory
+        required: false
+        in: query
+        description: subcategory
+        schema:
+          type: string
+      - name: uom
+        required: false
+        in: query
+        description: uom
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 123
+                  next:
+                    type: string
+                    nullable: true
+                    format: uri
+                    example: http://api.example.org/accounts/?page=4
+                  previous:
+                    type: string
+                    nullable: true
+                    format: uri
+                    example: http://api.example.org/accounts/?page=2
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Product'
+          description: ''
+      tags:
+      - api
+  /api/v1/categories/{sku}/:
+    get:
+      operationId: retrieveProduct
+      description: "\u041F\u0440\u0435\u0434\u0441\u0442\u0430\u0432\u043B\u0435\u043D\
+        \u0438\u0435 \u043C\u043E\u0434\u0435\u043B\u0438 \u0442\u043E\u0432\u0430\
+        \u0440\u043D\u043E\u0439 \u0438\u0435\u0440\u0430\u0440\u0445\u0438\u0438."
+      parameters:
+      - name: sku
+        in: path
+        required: true
+        description: "A unique value identifying this \u041F\u0440\u043E\u0434\u0443\
+          \u043A\u0442."
+        schema:
+          type: string
+      - name: sku
+        required: false
+        in: query
+        description: sku
+        schema:
+          type: string
+      - name: group
+        required: false
+        in: query
+        description: group
+        schema:
+          type: string
+      - name: category
+        required: false
+        in: query
+        description: category
+        schema:
+          type: string
+      - name: subcategory
+        required: false
+        in: query
+        description: subcategory
+        schema:
+          type: string
+      - name: uom
+        required: false
+        in: query
+        description: uom
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+          description: ''
+      tags:
+      - api
+  /api/v1/sales/:
+    get:
+      operationId: listSales
+      description: "\u041F\u0440\u0435\u0434\u0441\u0442\u0430\u0432\u043B\u0435\u043D\
+        \u0438\u0435 \u043C\u043E\u0434\u0435\u043B\u0438 \u043F\u0440\u043E\u0434\
+        \u0430\u0436."
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 123
+                  next:
+                    type: string
+                    nullable: true
+                    format: uri
+                    example: http://api.example.org/accounts/?page=4
+                  previous:
+                    type: string
+                    nullable: true
+                    format: uri
+                    example: http://api.example.org/accounts/?page=2
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SalesGroup'
+          description: ''
+      tags:
+      - api
+    post:
+      operationId: createSales
+      description: "\u041F\u0440\u0435\u0434\u0441\u0442\u0430\u0432\u043B\u0435\u043D\
+        \u0438\u0435 \u043C\u043E\u0434\u0435\u043B\u0438 \u043F\u0440\u043E\u0434\
+        \u0430\u0436."
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SalesFact'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SalesFact'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SalesFact'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SalesFact'
+          description: ''
+      tags:
+      - api
+  /api/v1/sales/{id}/:
+    get:
+      operationId: retrieveSales
+      description: "\u041F\u0440\u0435\u0434\u0441\u0442\u0430\u0432\u043B\u0435\u043D\
+        \u0438\u0435 \u043C\u043E\u0434\u0435\u043B\u0438 \u043F\u0440\u043E\u0434\
+        \u0430\u0436."
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: "A unique integer value identifying this \u041F\u0440\u043E\u0434\
+          \u0430\u0436\u0438."
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SalesGroup'
+          description: ''
+      tags:
+      - api
+  /api/v1/shops/:
+    get:
+      operationId: listShops
+      description: "\u041F\u0440\u0435\u0434\u0441\u0442\u0430\u0432\u043B\u0435\u043D\
+        \u0438\u0435 \u043C\u043E\u0434\u0435\u043B\u0438 \u043C\u0430\u0433\u0430\
+        \u0437\u0438\u043D\u043E\u0432."
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: store
+        required: false
+        in: query
+        description: store
+        schema:
+          type: string
+      - name: city
+        required: false
+        in: query
+        description: city
+        schema:
+          type: string
+      - name: division
+        required: false
+        in: query
+        description: division
+        schema:
+          type: string
+      - name: type_format
+        required: false
+        in: query
+        description: type_format
+        schema:
+          type: string
+      - name: loc
+        required: false
+        in: query
+        description: loc
+        schema:
+          type: string
+      - name: size
+        required: false
+        in: query
+        description: size
+        schema:
+          type: string
+      - name: is_active
+        required: false
+        in: query
+        description: is_active
+        schema:
+          type: string
+          enum:
+          - 0
+          - 1
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 123
+                  next:
+                    type: string
+                    nullable: true
+                    format: uri
+                    example: http://api.example.org/accounts/?page=4
+                  previous:
+                    type: string
+                    nullable: true
+                    format: uri
+                    example: http://api.example.org/accounts/?page=2
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Shops'
+          description: ''
+      tags:
+      - api
+  /api/v1/shops/{store}/:
+    get:
+      operationId: retrieveShop
+      description: "\u041F\u0440\u0435\u0434\u0441\u0442\u0430\u0432\u043B\u0435\u043D\
+        \u0438\u0435 \u043C\u043E\u0434\u0435\u043B\u0438 \u043C\u0430\u0433\u0430\
+        \u0437\u0438\u043D\u043E\u0432."
+      parameters:
+      - name: store
+        in: path
+        required: true
+        description: "A unique value identifying this \u041C\u0430\u0433\u0430\u0437\
+          \u0438\u043D."
+        schema:
+          type: string
+      - name: store
+        required: false
+        in: query
+        description: store
+        schema:
+          type: string
+      - name: city
+        required: false
+        in: query
+        description: city
+        schema:
+          type: string
+      - name: division
+        required: false
+        in: query
+        description: division
+        schema:
+          type: string
+      - name: type_format
+        required: false
+        in: query
+        description: type_format
+        schema:
+          type: string
+      - name: loc
+        required: false
+        in: query
+        description: loc
+        schema:
+          type: string
+      - name: size
+        required: false
+        in: query
+        description: size
+        schema:
+          type: string
+      - name: is_active
+        required: false
+        in: query
+        description: is_active
+        schema:
+          type: string
+          enum:
+          - 0
+          - 1
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shops'
+          description: ''
+      tags:
+      - api
+  /api/v1/forecast/:
+    get:
+      operationId: listForecasts
+      description: "\u041C\u0435\u0442\u043E\u0434 \u0434\u043B\u044F \u043F\u043E\
+        \u043B\u0443\u0447\u0435\u043D\u0438\u044F \u0441\u043F\u0438\u0441\u043A\u0430\
+        \ \u043F\u0440\u043E\u0433\u043D\u043E\u0437\u043E\u0432."
+      parameters:
+      - name: store
+        required: false
+        in: query
+        description: store
+        schema:
+          type: string
+      - name: product
+        required: false
+        in: query
+        description: product
+        schema:
+          type: string
+      - name: forecast_date
+        required: false
+        in: query
+        description: forecast_date
+        schema:
+          type: string
+      - name: city
+        required: false
+        in: query
+        description: city
+        schema:
+          type: string
+      - name: division
+        required: false
+        in: query
+        description: division
+        schema:
+          type: string
+      - name: type_format
+        required: false
+        in: query
+        description: type_format
+        schema:
+          type: string
+      - name: location
+        required: false
+        in: query
+        description: location
+        schema:
+          type: string
+      - name: size
+        required: false
+        in: query
+        description: size
+        schema:
+          type: string
+      - name: is_active
+        required: false
+        in: query
+        description: is_active
+        schema:
+          type: string
+      - name: group
+        required: false
+        in: query
+        description: group
+        schema:
+          type: string
+      - name: category
+        required: false
+        in: query
+        description: category
+        schema:
+          type: string
+      - name: subcategory
+        required: false
+        in: query
+        description: subcategory
+        schema:
+          type: string
+      - name: uom
+        required: false
+        in: query
+        description: uom
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ForecastGet'
+          description: ''
+      tags:
+      - api
+    post:
+      operationId: createForecast
+      description: "\u041C\u0435\u0442\u043E\u0434 \u0434\u043B\u044F \u0441\u043E\
+        \u0437\u0434\u0430\u043D\u0438\u044F \u043F\u0440\u043E\u0433\u043D\u043E\u0437\
+        \u0430 \u0438 \u0432\u043E\u0437\u0432\u0440\u0430\u0442\u0430 \u0434\u0430\
+        \u043D\u043D\u044B\u0445 \u0432 \u043D\u0443\u0436\u043D\u043E\u043C \u0444\
+        \u043E\u0440\u043C\u0430\u0442\u0435."
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForecastPost'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ForecastPost'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ForecastPost'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForecastPost'
+          description: ''
+      tags:
+      - api
+  /api/v1/forecast/{id}/:
+    get:
+      operationId: retrieveForecast
+      description: "\u041E\u0433\u0440\u0430\u043D\u0438\u0447\u0435\u043D\u0438\u0435\
+        \ \u043C\u0435\u0442\u043E\u0434\u0430 retrieve."
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: "A unique integer value identifying this \u041F\u0440\u043E\u0433\
+          \u043D\u043E\u0437 \u043F\u0440\u043E\u0434\u0430\u0436."
+        schema:
+          type: string
+      - name: store
+        required: false
+        in: query
+        description: store
+        schema:
+          type: string
+      - name: product
+        required: false
+        in: query
+        description: product
+        schema:
+          type: string
+      - name: forecast_date
+        required: false
+        in: query
+        description: forecast_date
+        schema:
+          type: string
+      - name: city
+        required: false
+        in: query
+        description: city
+        schema:
+          type: string
+      - name: division
+        required: false
+        in: query
+        description: division
+        schema:
+          type: string
+      - name: type_format
+        required: false
+        in: query
+        description: type_format
+        schema:
+          type: string
+      - name: location
+        required: false
+        in: query
+        description: location
+        schema:
+          type: string
+      - name: size
+        required: false
+        in: query
+        description: size
+        schema:
+          type: string
+      - name: is_active
+        required: false
+        in: query
+        description: is_active
+        schema:
+          type: string
+      - name: group
+        required: false
+        in: query
+        description: group
+        schema:
+          type: string
+      - name: category
+        required: false
+        in: query
+        description: category
+        schema:
+          type: string
+      - name: subcategory
+        required: false
+        in: query
+        description: subcategory
+        schema:
+          type: string
+      - name: uom
+        required: false
+        in: query
+        description: uom
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForecastGet'
+          description: ''
+      tags:
+      - api
+  /api/v1/forecast/bulk_create/:
+    post:
+      operationId: bulkCreateForecast
+      description: "\u041C\u0435\u0442\u043E\u0434 \u0434\u043B\u044F \u043C\u0430\
+        \u0441\u0441\u043E\u0432\u043E\u0433\u043E \u0441\u043E\u0437\u0434\u0430\u043D\
+        \u0438\u044F \u043F\u0440\u043E\u0433\u043D\u043E\u0437\u043E\u0432.\n\u041F\
+        \u0440\u0438\u043D\u0438\u043C\u0430\u0435\u0442 \u0441\u043F\u0438\u0441\u043E\
+        \u043A \u043F\u0440\u043E\u0433\u043D\u043E\u0437\u043E\u0432 \u0438 \u0441\
+        \u043E\u0445\u0440\u0430\u043D\u044F\u0435\u0442 \u0438\u0445 \u0432\u0441\
+        \u0435 \u0432 \u0431\u0430\u0437\u0435 \u0434\u0430\u043D\u043D\u044B\u0445\
+        ."
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForecastGet'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ForecastGet'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ForecastGet'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForecastGet'
+          description: ''
+      tags:
+      - api
+  /api/auth/token/login/:
+    post:
+      operationId: createCustomTokenCreate
+      description: "\u0412\u044C\u044E\u0441\u0435\u0442 \u043F\u043E\u043B\u0443\u0447\
+        \u0435\u043D\u0438\u044F \u0442\u043E\u043A\u0435\u043D\u0430."
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomTokenCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CustomTokenCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CustomTokenCreate'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomTokenCreate'
+          description: ''
+      tags:
+      - api
+  /api/auth/token/logout/:
+    post:
+      operationId: createTokenDestroy
+      description: Use this endpoint to logout user (remove user authentication token).
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema: {}
+          application/x-www-form-urlencoded:
+            schema: {}
+          multipart/form-data:
+            schema: {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema: {}
+          description: ''
+      tags:
+      - api
+components:
+  schemas:
+    CustomUser:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          maxLength: 150
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+      required:
+      - email
+      - username
+      - first_name
+      - last_name
+    Product:
+      type: object
+      properties:
+        sku:
+          type: string
+          maxLength: 100
+        group:
+          type: string
+          nullable: true
+        category:
+          type: string
+          nullable: true
+        subcategory:
+          type: string
+          nullable: true
+        uom:
+          enum:
+          - 1
+          - 17
+          type: integer
+      required:
+      - sku
+      - uom
+    SalesGroup:
+      type: object
+      properties:
+        store:
+          type: string
+          readOnly: true
+        sku:
+          type: string
+          readOnly: true
+        fact:
+          type: string
+          readOnly: true
+    Shops:
+      type: object
+      properties:
+        store:
+          type: string
+          maxLength: 100
+        city:
+          type: string
+          readOnly: true
+        division:
+          type: string
+          readOnly: true
+        type_format:
+          type: string
+          readOnly: true
+        loc:
+          type: string
+          readOnly: true
+        size:
+          type: string
+          readOnly: true
+        is_active:
+          enum:
+          - 0
+          - 1
+          type: integer
+      required:
+      - store
+      - is_active
+    ForecastGet:
+      type: object
+      properties:
+        store:
+          type: string
+        sku:
+          type: string
+        forecast_date:
+          type: string
+          format: date
+        forecast:
+          type: object
+      required:
+      - store
+      - sku
+      - forecast_date
+      - forecast
+    Signup:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        password:
+          type: string
+          writeOnly: true
+      required:
+      - username
+      - email
+      - first_name
+      - last_name
+      - password
+    SalesFact:
+      type: object
+      properties:
+        store:
+          type: string
+        sku:
+          type: string
+        fact:
+          type: array
+          items:
+            type: object
+            properties:
+              date:
+                type: string
+                format: date
+              sales_type:
+                type: integer
+              sales_units:
+                type: integer
+              sales_units_promo:
+                type: integer
+              sales_rub:
+                type: string
+                format: decimal
+                multipleOf: 0.01
+                maximum: 10000000000000
+                minimum: -10000000000000
+              sales_run_promo:
+                type: string
+                format: decimal
+                multipleOf: 0.01
+                maximum: 10000000000000
+                minimum: -10000000000000
+            required:
+            - date
+            - sales_type
+            - sales_units
+            - sales_units_promo
+            - sales_rub
+            - sales_run_promo
+      required:
+      - store
+      - sku
+      - fact
+    ForecastPost:
+      type: object
+      properties:
+        store:
+          type: string
+        forecast_date:
+          type: string
+          format: date
+        forecast:
+          type: object
+      required:
+      - store
+      - forecast_date
+    CustomTokenCreate:
+      type: object
+      properties:
+        password:
+          type: string
+        email:
+          type: string

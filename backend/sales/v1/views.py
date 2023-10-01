@@ -17,7 +17,6 @@ class SalesViewSet(viewsets.ModelViewSet):
     http_method_names = ['get', 'post']
     pagination_class = LimitPageNumberPagination
 
-
     def retrieve(self, request):
         raise MethodNotAllowed('GET', detail=ONLY_LIST_MSG)
     
@@ -38,6 +37,19 @@ class SalesViewSet(viewsets.ModelViewSet):
             context['date_end'] = date_end
         return context
     
+    # Не формировалась документация (ошибка date_start = self.request.GET.get('date_start')
+    # AttributeError: 'NoneType' object has no attribute 'GET') Переделала метод так
+    # def get_serializer_context(self): 
+    #     context = {}
+    #     if self.request:
+    #         context['request'] = self.request
+    #         date_start = self.request.GET.get('date_start')
+    #         date_end = self.request.GET.get('date_end')
+    #         if date_start and date_end:
+    #             context['date_start'] = date_start
+    #             context['date_end'] = date_end
+    #     return context
+
     def get_instance(self):
         store_id = self.request.query_params.get('store')
         sku_id = self.request.query_params.get('sku')

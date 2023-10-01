@@ -11,6 +11,5 @@ class ShopViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = Shop.objects.all()
     serializer_class = ShopsSerializer
-    pagination_class = None
     filterset_class = ShopFilter
     pagination_class = LimitPageNumberPagination

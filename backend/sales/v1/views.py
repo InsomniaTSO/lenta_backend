@@ -3,6 +3,7 @@ from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework.exceptions import MethodNotAllowed
+from rest_framework.decorators import action
 from lenta_backend.consatants import ONLY_LIST_MSG
 from sales.v1.models import Sales
 from sales.v1.serializers import SalesGroupSerializer, SalesFactSerializer
@@ -47,7 +48,6 @@ class SalesViewSet(viewsets.ModelViewSet):
             context['date_end'] = date_end
         return context
     
-
     def get_queryset(self):
         """Получает экземпляр объекта Sales c фильтрам по
            магазину и товару.
@@ -79,8 +79,14 @@ class SalesViewSet(viewsets.ModelViewSet):
         return Response({"data": data_list})
 
     def create(self, request):
-        serializer = self.get_serializer(data=request.data)
+        serializer = self.get_serializer(data=request.data['data'])
         serializer.is_valid(raise_exception=True)
         serializer.save()
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+    
+    @action(detail=False, methods=['get'])
+    def ml_all(self, request, *args, **kwargs):
+        queryset = Sales.objects.all()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response({'data': serializer.data})

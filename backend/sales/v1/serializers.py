@@ -1,11 +1,6 @@
-import logging
-
 from categories.v1.models import Product
-from shops.v1.serializers import ShopsSerializer
-from django.shortcuts import get_object_or_404
 from lenta_backend.consatants import DECIMAL_PLACES, MAX_DIGITS
 from rest_framework import serializers
-from rest_framework.response import Response
 from sales.v1.models import Sales
 from shops.v1.models import Shop
 

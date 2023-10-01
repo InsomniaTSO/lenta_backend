@@ -2,20 +2,21 @@ import os
 import requests
 import logging
 from datetime import date, timedelta
-
+from api_host import API_HOST, API_PORT, API_VERSION 
 from model import forecast
 
 URL_CATEGORIES = 'categories'
-URL_SALES = 'sales'
+URL_SALES = 'sales/ml_all'
 URL_STORES = 'shops'
 URL_FORECAST = 'forecast'
 
 
-api_port = os.environ.get('API_PORT', '8000')
-api_host = os.environ.get('API_PORT', 'localhost')
+api_port = API_PORT 
+api_host = API_HOST
 
 
 _logger = logging.getLogger(__name__)
+
 
 def setup_logging():
 
@@ -26,22 +27,21 @@ def setup_logging():
     handler_m.setFormatter(formatter_m)
     _logger.addHandler(handler_m) 
 
-def get_address(resource):
 
-    return 'http://' + api_host + ':' + api_port + '/' + resource
+def get_address(resource):
+    return f"http://{api_host}:{api_port}/api/{API_VERSION}/{resource}"
+
 
 def get_stores():
-
     url = get_address(URL_STORES) 
     response = requests.get(url)
-
     if response.status_code != 200:
         _logger.warning('Сервер недоступен. Неудалось получить список магазинов.')
         return []
     return response.json()['data']
 
-def get_categories():
 
+def get_categories():
     url = get_address(URL_CATEGORIES)
     response = requests.get(url)
     if response.status_code != 200:
@@ -51,30 +51,22 @@ def get_categories():
     result = {el['sku']: el for el in response.json()['data']}
     return result
 
-def get_sales(store=None, sku=None):
 
+def get_sales():
     url = get_address(URL_SALES)
-    params = {}
-    if store is not None:
-        params['store'] = store
-    if sku is not None:
-        params['sku'] = sku
-    response = requests.get(url, params=params)
+    response = requests.get(url)
     if response.status_code != 200:
         _logger.warning('Сервер недоступен. Неудалось получить историю продаж.')
-       
-    return response.json()['data']
+    return response.json()['data'][1:10]
+
 
 def main(today=date.today()):
-
     forecast_dates = [today + timedelta(days=d) for d in range(1, 14)]
     forecast_dates = [el.strftime('%Y-%m-%d') for el in forecast_dates]
     categories = get_categories()
-    
     for store in get_stores():
-        
         result = []
-        for sale in get_sales(store=['store']):
+        for sale in get_sales():
             sale_info = categories[sale['sku']]
             sales = sale['fact']
             prediction = forecast(store, sales, sale_info)
@@ -84,7 +76,9 @@ def main(today=date.today()):
                                         'sales_units': {k: v for k, v in zip(forecast_dates, prediction)}
                                         }
                           })
-        requests.post(get_address(URL_FORECAST), json={'data': result})  
+        print(result)
+        requests.post(get_address(URL_FORECAST), json=result)  
+
 
 if __name__ == '__main__':
     setup_logging()

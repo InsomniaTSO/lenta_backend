@@ -28,9 +28,9 @@ class Command(BaseCommand):
                 product = Product.objects.get(sku=row[1])
                 Sales.objects.get_or_create(shop=shop, product=product, 
                                             date=row[2],  
-                                            sales_type_id=row[3], 
-                                            sales_in_units=int(float(row[4])),
-                                            promo_sales_in_units=int(float(row[5])),
-                                            sales_in_rub=row[6],
-                                            promo_sales_in_rub=row[7])
+                                            sales_type=row[3], 
+                                            sales_units=int(float(row[4])),
+                                            sales_units_promo=int(float(row[5])),
+                                            sales_rub=row[6],
+                                            sales_run_promo=row[7])
         logging.info('Загрузка завершена успешно')

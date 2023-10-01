@@ -7,6 +7,9 @@ from lenta_backend.consatants import ONLY_LIST_MSG
 from .models import Forecast
 from .serializers import ForecastPostSerializer, ForecastGetSerializer
 from shops.v1.models import Shop
+from datetime import datetime
+from django.http import HttpResponse
+
 
 class ForecastViewSet(viewsets.ModelViewSet): 
     """Представление для работы с моделью прогноза.""" 
@@ -46,3 +49,17 @@ class ForecastViewSet(viewsets.ModelViewSet):
             serializer.is_valid(raise_exception=True) 
             forecasts.append(serializer.save()) 
         return Response(self.get_serializer(forecasts, many=True).data, status=status.HTTP_201_CREATED)
+
+    @action(detail=False, methods=['get'])
+    def download_file(self, request):
+        """
+        Возвращает xls-файл с предсказаниями.
+        """
+        today = datetime.today().strftime('%d-%m-%Y')
+        filename = f'{today}_forecast.xls'
+        forecast = f'{today}_forecast.xls'
+        response = HttpResponse(
+            forecast, content_type='application/vnd.ms-excel'
+        )
+        response['Content-Disposition'] = f'attachment; filename={filename}'
+        return response

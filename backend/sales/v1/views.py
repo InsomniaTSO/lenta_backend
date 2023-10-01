@@ -1,3 +1,4 @@
+from django.db.models import Q
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
@@ -21,6 +22,13 @@ class SalesViewSet(viewsets.ModelViewSet):
     def retrieve(self, request):
         raise MethodNotAllowed('GET', detail=ONLY_LIST_MSG)
     
+    def get_serializer(self, *args, **kwargs):
+        """Задает значение many=true если передан список.
+        """
+        if isinstance(kwargs.get('data', {}), list):
+            kwargs['many'] = True
+        return super(SalesViewSet, self).get_serializer(*args, **kwargs)
+    
     def get_serializer_class(self):
         """Возвращает сериализатор в зависимости от
         используемого метода.
@@ -30,6 +38,8 @@ class SalesViewSet(viewsets.ModelViewSet):
         return self.serializer_class
     
     def get_serializer_context(self):
+        """Передает дополнительный контекст для поиска по дате.
+        """
         context = {'request': self.request}
         date_start = self.request.GET.get('date_start')
         date_end = self.request.GET.get('date_end')
@@ -38,23 +48,35 @@ class SalesViewSet(viewsets.ModelViewSet):
             context['date_end'] = date_end
         return context
     
-    def get_instance(self):
-        store_id = self.request.query_params.get('store')
-        sku_id = self.request.query_params.get('sku')
-        if not store_id or not sku_id:
+    def get_queryset(self):
+        """Получает экземпляр объекта Sales c фильтрам по
+           магазину и товару.
+        """
+        queryset = Sales.objects.all()
+        store_ids = self.request.query_params.getlist('store')
+        sku_ids = self.request.query_params.getlist('sku')
+        if not store_ids or not sku_ids:
             return Sales.objects.none()
-        insanse = Sales.objects.filter(shop=store_id, product=sku_id).first()
-        return insanse
+        query = Q()
+        for store_id in store_ids:
+            for sku_id in  sku_ids:
+                query |= Q(shop=store_id, product=sku_id)
+        queryset = queryset.filter(query)
+        return queryset
 
     def list(self, request, *args, **kwargs):
-        instance = self.get_instance()
-        if not instance:
+        queryset = self.get_queryset()
+        data_list = []
+        if not queryset:
             return Response(
                 {'error': 'Не найдены данные с указанными параметрами'},
                 status=status.HTTP_404_NOT_FOUND
             )
-        serializer = self.get_serializer(instance) 
-        return Response({"data": serializer.data})
+        for obj in queryset:
+            serializer = self.get_serializer(obj) 
+            if serializer.data not in data_list:
+                data_list.append(serializer.data)
+        return Response({"data": data_list})
 
     def create(self, request):
         serializer = self.get_serializer(data=request.data)

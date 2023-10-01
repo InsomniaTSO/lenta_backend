@@ -1,0 +1,1001 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "title": "LENTA BACKEND",
+      "description": "Документация для приложения LENTA BACKEND",
+      "version": "v1"
+    },
+    "host": "localhost:8000",
+    "schemes": [
+      "http"
+    ],
+    "basePath": "/api",
+    "consumes": [
+      "application/json"
+    ],
+    "produces": [
+      "application/json"
+    ],
+    "securityDefinitions": {
+      "Basic": {
+        "type": "basic"
+      }
+    },
+    "security": [
+      {
+        "Basic": []
+      }
+    ],
+    "paths": {
+      "/auth/token/login/": {
+        "post": {
+          "operationId": "auth_token_login_create",
+          "description": "Вьюсет получения токена.",
+          "parameters": [
+            {
+              "name": "data",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/CustomTokenCreate"
+              }
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": "",
+              "schema": {
+                "$ref": "#/definitions/CustomTokenCreate"
+              }
+            }
+          },
+          "tags": [
+            "auth"
+          ]
+        },
+        "parameters": []
+      },
+      "/auth/token/logout/": {
+        "post": {
+          "operationId": "auth_token_logout_create",
+          "description": "Use this endpoint to logout user (remove user authentication token).",
+          "parameters": [],
+          "responses": {
+            "201": {
+              "description": ""
+            }
+          },
+          "tags": [
+            "auth"
+          ]
+        },
+        "parameters": []
+      },
+      "/v1/categories/": {
+        "get": {
+          "operationId": "v1_categories_list",
+          "description": "Метод для получения списка товарной иерархии.",
+          "parameters": [
+            {
+              "name": "sku",
+              "in": "query",
+              "description": "sku",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "name": "group",
+              "in": "query",
+              "description": "group",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "name": "category",
+              "in": "query",
+              "description": "category",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "name": "subcategory",
+              "in": "query",
+              "description": "subcategory",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "name": "uom",
+              "in": "query",
+              "description": "uom",
+              "required": false,
+              "type": "string"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Product"
+                }
+              }
+            }
+          },
+          "tags": [
+            "v1"
+          ]
+        },
+        "parameters": []
+      },
+      "/v1/categories/{sku}/": {
+        "get": {
+          "operationId": "v1_categories_read",
+          "description": "Представление модели товарной иерархии.",
+          "parameters": [],
+          "responses": {
+            "200": {
+              "description": "",
+              "schema": {
+                "$ref": "#/definitions/Product"
+              }
+            }
+          },
+          "tags": [
+            "v1"
+          ]
+        },
+        "parameters": [
+          {
+            "name": "sku",
+            "in": "path",
+            "description": "A unique value identifying this Продукт.",
+            "required": true,
+            "type": "string"
+          }
+        ]
+      },
+      "/v1/forecast/": {
+        "get": {
+          "operationId": "v1_forecast_list",
+          "description": "Метод для получения списка прогнозов.",
+          "parameters": [],
+          "responses": {
+            "200": {
+              "description": "",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/ForecastGet"
+                }
+              }
+            }
+          },
+          "tags": [
+            "v1"
+          ]
+        },
+        "post": {
+          "operationId": "v1_forecast_create",
+          "description": "Представление для работы с моделью прогноза.",
+          "parameters": [
+            {
+              "name": "data",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/ForecastPost"
+              }
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": "",
+              "schema": {
+                "$ref": "#/definitions/ForecastPost"
+              }
+            }
+          },
+          "tags": [
+            "v1"
+          ]
+        },
+        "parameters": []
+      },
+      "/v1/forecast/bulk_create/": {
+        "post": {
+          "operationId": "v1_forecast_bulk_create",
+          "description": "Метод для массового создания прогнозов.\nПринимает список прогнозов и сохраняет их все в базе данных.",
+          "parameters": [
+            {
+              "name": "data",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/ForecastGet"
+              }
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": "",
+              "schema": {
+                "$ref": "#/definitions/ForecastGet"
+              }
+            }
+          },
+          "tags": [
+            "v1"
+          ]
+        },
+        "parameters": []
+      },
+      "/v1/forecast/download_file/": {
+        "get": {
+          "operationId": "v1_forecast_download_file",
+          "description": "Возвращает xls-файл с предсказаниями.",
+          "parameters": [],
+          "responses": {
+            "200": {
+              "description": "",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/ForecastGet"
+                }
+              }
+            }
+          },
+          "tags": [
+            "v1"
+          ]
+        },
+        "parameters": []
+      },
+      "/v1/forecast/{id}/": {
+        "get": {
+          "operationId": "v1_forecast_read",
+          "description": "Ограничение метода retrieve.",
+          "parameters": [],
+          "responses": {
+            "200": {
+              "description": "",
+              "schema": {
+                "$ref": "#/definitions/ForecastGet"
+              }
+            }
+          },
+          "tags": [
+            "v1"
+          ]
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "A unique integer value identifying this Прогноз продаж.",
+            "required": true,
+            "type": "integer"
+          }
+        ]
+      },
+      "/v1/sales/": {
+        "get": {
+          "operationId": "v1_sales_list",
+          "description": "Представление модели продаж.",
+          "parameters": [
+            {
+              "name": "page",
+              "in": "query",
+              "description": "A page number within the paginated result set.",
+              "required": false,
+              "type": "integer"
+            },
+            {
+              "name": "limit",
+              "in": "query",
+              "description": "Number of results to return per page.",
+              "required": false,
+              "type": "integer"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "",
+              "schema": {
+                "required": [
+                  "count",
+                  "results"
+                ],
+                "type": "object",
+                "properties": {
+                  "count": {
+                    "type": "integer"
+                  },
+                  "next": {
+                    "type": "string",
+                    "format": "uri",
+                    "x-nullable": true
+                  },
+                  "previous": {
+                    "type": "string",
+                    "format": "uri",
+                    "x-nullable": true
+                  },
+                  "results": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/definitions/SalesGroup"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "tags": [
+            "v1"
+          ]
+        },
+        "post": {
+          "operationId": "v1_sales_create",
+          "description": "Представление модели продаж.",
+          "parameters": [
+            {
+              "name": "data",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/SalesFact"
+              }
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": "",
+              "schema": {
+                "$ref": "#/definitions/SalesFact"
+              }
+            }
+          },
+          "tags": [
+            "v1"
+          ]
+        },
+        "parameters": []
+      },
+      "/v1/sales/{id}/": {
+        "get": {
+          "operationId": "v1_sales_read",
+          "description": "Представление модели продаж.",
+          "parameters": [],
+          "responses": {
+            "200": {
+              "description": "",
+              "schema": {
+                "$ref": "#/definitions/SalesGroup"
+              }
+            }
+          },
+          "tags": [
+            "v1"
+          ]
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "A unique integer value identifying this Продажи.",
+            "required": true,
+            "type": "integer"
+          }
+        ]
+      },
+      "/v1/shops/": {
+        "get": {
+          "operationId": "v1_shops_list",
+          "description": "Метод для получения списка магазинов.",
+          "parameters": [
+            {
+              "name": "store",
+              "in": "query",
+              "description": "store",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "name": "city",
+              "in": "query",
+              "description": "city",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "name": "division",
+              "in": "query",
+              "description": "division",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "name": "type_format",
+              "in": "query",
+              "description": "type_format",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "name": "loc",
+              "in": "query",
+              "description": "loc",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "name": "size",
+              "in": "query",
+              "description": "size",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "name": "is_active",
+              "in": "query",
+              "description": "is_active",
+              "required": false,
+              "type": "string"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Shops"
+                }
+              }
+            }
+          },
+          "tags": [
+            "v1"
+          ]
+        },
+        "parameters": []
+      },
+      "/v1/shops/{store}/": {
+        "get": {
+          "operationId": "v1_shops_read",
+          "description": "Представление модели магазинов.",
+          "parameters": [],
+          "responses": {
+            "200": {
+              "description": "",
+              "schema": {
+                "$ref": "#/definitions/Shops"
+              }
+            }
+          },
+          "tags": [
+            "v1"
+          ]
+        },
+        "parameters": [
+          {
+            "name": "store",
+            "in": "path",
+            "description": "A unique value identifying this Магазин.",
+            "required": true,
+            "type": "string"
+          }
+        ]
+      },
+      "/v1/users/": {
+        "get": {
+          "operationId": "v1_users_list",
+          "description": "Вьюсет пользователей.",
+          "parameters": [
+            {
+              "name": "limit",
+              "in": "query",
+              "description": "Number of results to return per page.",
+              "required": false,
+              "type": "integer"
+            },
+            {
+              "name": "offset",
+              "in": "query",
+              "description": "The initial index from which to return the results.",
+              "required": false,
+              "type": "integer"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "",
+              "schema": {
+                "required": [
+                  "count",
+                  "results"
+                ],
+                "type": "object",
+                "properties": {
+                  "count": {
+                    "type": "integer"
+                  },
+                  "next": {
+                    "type": "string",
+                    "format": "uri",
+                    "x-nullable": true
+                  },
+                  "previous": {
+                    "type": "string",
+                    "format": "uri",
+                    "x-nullable": true
+                  },
+                  "results": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/definitions/CustomUser"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "tags": [
+            "v1"
+          ]
+        },
+        "post": {
+          "operationId": "v1_users_create",
+          "description": "Вьюсет пользователей.",
+          "parameters": [
+            {
+              "name": "data",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/Signup"
+              }
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": "",
+              "schema": {
+                "$ref": "#/definitions/Signup"
+              }
+            }
+          },
+          "tags": [
+            "v1"
+          ]
+        },
+        "parameters": []
+      },
+      "/v1/users/{id}/": {
+        "get": {
+          "operationId": "v1_users_read",
+          "description": "Вьюсет пользователей.",
+          "parameters": [],
+          "responses": {
+            "200": {
+              "description": "",
+              "schema": {
+                "$ref": "#/definitions/CustomUser"
+              }
+            }
+          },
+          "tags": [
+            "v1"
+          ]
+        },
+        "put": {
+          "operationId": "v1_users_update",
+          "description": "Вьюсет пользователей.",
+          "parameters": [
+            {
+              "name": "data",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/CustomUser"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "",
+              "schema": {
+                "$ref": "#/definitions/CustomUser"
+              }
+            }
+          },
+          "tags": [
+            "v1"
+          ]
+        },
+        "patch": {
+          "operationId": "v1_users_partial_update",
+          "description": "Вьюсет пользователей.",
+          "parameters": [
+            {
+              "name": "data",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/CustomUser"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "",
+              "schema": {
+                "$ref": "#/definitions/CustomUser"
+              }
+            }
+          },
+          "tags": [
+            "v1"
+          ]
+        },
+        "delete": {
+          "operationId": "v1_users_delete",
+          "description": "Вьюсет пользователей.",
+          "parameters": [],
+          "responses": {
+            "204": {
+              "description": ""
+            }
+          },
+          "tags": [
+            "v1"
+          ]
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "A unique integer value identifying this Пользователь.",
+            "required": true,
+            "type": "integer"
+          }
+        ]
+      }
+    },
+    "definitions": {
+      "CustomTokenCreate": {
+        "type": "object",
+        "properties": {
+          "password": {
+            "title": "Password",
+            "type": "string",
+            "minLength": 1
+          },
+          "email": {
+            "title": "Email",
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "Product": {
+        "required": [
+          "sku",
+          "uom"
+        ],
+        "type": "object",
+        "properties": {
+          "sku": {
+            "title": "Id товара",
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1
+          },
+          "group": {
+            "title": "Group",
+            "type": "string",
+            "x-nullable": true
+          },
+          "category": {
+            "title": "Category",
+            "type": "string",
+            "x-nullable": true
+          },
+          "subcategory": {
+            "title": "Subcategory",
+            "type": "string",
+            "x-nullable": true
+          },
+          "uom": {
+            "title": "Маркер продажи на вес",
+            "type": "integer",
+            "enum": [
+              1,
+              17
+            ]
+          }
+        }
+      },
+      "ForecastGet": {
+        "required": [
+          "store",
+          "sku",
+          "forecast_date",
+          "forecast"
+        ],
+        "type": "object",
+        "properties": {
+          "store": {
+            "title": "Store",
+            "type": "string",
+            "minLength": 1
+          },
+          "sku": {
+            "title": "Sku",
+            "type": "string",
+            "minLength": 1
+          },
+          "forecast_date": {
+            "title": "Forecast date",
+            "type": "string",
+            "format": "date"
+          },
+          "forecast": {
+            "title": "Forecast",
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "x-nullable": true
+            }
+          }
+        }
+      },
+      "ForecastPost": {
+        "required": [
+          "store",
+          "forecast_date"
+        ],
+        "type": "object",
+        "properties": {
+          "store": {
+            "title": "Store",
+            "type": "string"
+          },
+          "forecast_date": {
+            "title": "Дата начала прогноза",
+            "type": "string",
+            "format": "date"
+          },
+          "forecast": {
+            "title": "Прогноз на 14 дней",
+            "type": "object"
+          }
+        }
+      },
+      "SalesGroup": {
+        "type": "object",
+        "properties": {
+          "store": {
+            "title": "Store",
+            "type": "string",
+            "readOnly": true
+          },
+          "sku": {
+            "title": "Sku",
+            "type": "string",
+            "readOnly": true
+          },
+          "fact": {
+            "title": "Fact",
+            "type": "string",
+            "readOnly": true
+          }
+        }
+      },
+      "Fact": {
+        "required": [
+          "date",
+          "sales_type",
+          "sales_units",
+          "sales_units_promo",
+          "sales_rub",
+          "sales_run_promo"
+        ],
+        "type": "object",
+        "properties": {
+          "date": {
+            "title": "Date",
+            "type": "string",
+            "format": "date"
+          },
+          "sales_type": {
+            "title": "Sales type",
+            "type": "integer"
+          },
+          "sales_units": {
+            "title": "Sales units",
+            "type": "integer"
+          },
+          "sales_units_promo": {
+            "title": "Sales units promo",
+            "type": "integer"
+          },
+          "sales_rub": {
+            "title": "Sales rub",
+            "type": "string",
+            "format": "decimal"
+          },
+          "sales_run_promo": {
+            "title": "Sales run promo",
+            "type": "string",
+            "format": "decimal"
+          }
+        }
+      },
+      "SalesFact": {
+        "required": [
+          "store",
+          "sku",
+          "fact"
+        ],
+        "type": "object",
+        "properties": {
+          "store": {
+            "title": "Store",
+            "type": "string",
+            "minLength": 1
+          },
+          "sku": {
+            "title": "Sku",
+            "type": "string",
+            "minLength": 1
+          },
+          "fact": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/Fact"
+            }
+          }
+        }
+      },
+      "Shops": {
+        "required": [
+          "store",
+          "is_active"
+        ],
+        "type": "object",
+        "properties": {
+          "store": {
+            "title": "Id магазина",
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1
+          },
+          "city": {
+            "title": "City",
+            "type": "string",
+            "readOnly": true
+          },
+          "division": {
+            "title": "Division",
+            "type": "string",
+            "readOnly": true
+          },
+          "type_format": {
+            "title": "Type format",
+            "type": "string",
+            "readOnly": true
+          },
+          "loc": {
+            "title": "Loc",
+            "type": "string",
+            "readOnly": true
+          },
+          "size": {
+            "title": "Size",
+            "type": "string",
+            "readOnly": true
+          },
+          "is_active": {
+            "title": "Флаг активного магазина",
+            "type": "integer",
+            "enum": [
+              0,
+              1
+            ]
+          }
+        }
+      },
+      "CustomUser": {
+        "required": [
+          "email",
+          "username",
+          "first_name",
+          "last_name"
+        ],
+        "type": "object",
+        "properties": {
+          "email": {
+            "title": "Почта",
+            "type": "string",
+            "format": "email",
+            "maxLength": 254,
+            "minLength": 1
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer",
+            "readOnly": true
+          },
+          "username": {
+            "title": "Имя пользователя",
+            "type": "string",
+            "maxLength": 150,
+            "minLength": 1
+          },
+          "first_name": {
+            "title": "Имя",
+            "type": "string",
+            "maxLength": 150,
+            "minLength": 1
+          },
+          "last_name": {
+            "title": "Фамилия",
+            "type": "string",
+            "maxLength": 150,
+            "minLength": 1
+          }
+        }
+      },
+      "Signup": {
+        "required": [
+          "username",
+          "email",
+          "first_name",
+          "last_name",
+          "password"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer",
+            "readOnly": true
+          },
+          "username": {
+            "title": "Имя пользователя",
+            "type": "string",
+            "maxLength": 150,
+            "minLength": 1
+          },
+          "email": {
+            "title": "Почта",
+            "type": "string",
+            "format": "email",
+            "maxLength": 254,
+            "minLength": 1
+          },
+          "first_name": {
+            "title": "Имя",
+            "type": "string",
+            "maxLength": 150,
+            "minLength": 1
+          },
+          "last_name": {
+            "title": "Фамилия",
+            "type": "string",
+            "maxLength": 150,
+            "minLength": 1
+          },
+          "password": {
+            "title": "Password",
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  }

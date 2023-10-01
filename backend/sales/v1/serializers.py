@@ -1,11 +1,6 @@
-import logging
-
 from categories.v1.models import Product
-from shops.v1.serializers import ShopsSerializer
-from django.shortcuts import get_object_or_404
 from lenta_backend.consatants import DECIMAL_PLACES, MAX_DIGITS
 from rest_framework import serializers
-from rest_framework.response import Response
 from sales.v1.models import Sales
 from shops.v1.models import Shop
 
@@ -34,10 +29,10 @@ class SalesGroupSerializer(serializers.ModelSerializer):
         fields = ('store', 'sku', 'fact')
 
     def get_fact(self, obj):
-        shop = obj.shop
-        product = obj.product
         date_start = self.context.get('date_start')
         date_end = self.context.get('date_end')
+        shop = obj.shop
+        product = obj.product
         sales = Sales.objects.filter(shop=shop, product=product)
         if date_start and date_end:
             sales = sales.filter(date__range=(date_start, date_end))
@@ -63,7 +58,9 @@ class FactSerializer(serializers.ModelSerializer):
 
 
 class SalesFactSerializer(serializers.ModelSerializer):
-    
+    """Сериализатор для загрузки информации о продажах. 
+    """
+
     store = serializers.CharField()
     sku = serializers.CharField()
     fact = serializers.ListField(child=FactSerializer())
@@ -71,25 +68,26 @@ class SalesFactSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sales
         fields = ('store', 'sku', 'fact')
-        
+
     def create(self, validated_data):
-        store = Shop.objects.get(store=validated_data.get('store'))
-        sku = Product.objects.get(sku=validated_data.get('sku'))
-        fact = validated_data.get('fact')
-        for f in fact:
-            if Sales.objects.filter(shop=store, product=sku, date=f['date']).exists():
-                Sales.objects.filter(shop=store, product=sku, 
-                                     date=f['date']).update(sales_type=f['sales_type'],
-                                     sales_units=f['sales_units'],
-                                     sales_units_promo=f['sales_units_promo'],
-                                     sales_rub=f['sales_rub'],
-                                     sales_run_promo=f['sales_run_promo'])
-            else:
-                Sales.objects.create(shop=store, product=sku, 
-                                     date=f['date'], sales_type=f['sales_type'],
-                                     sales_units=f['sales_units'],
-                                     sales_units_promo=f['sales_units_promo'],
-                                     sales_rub=f['sales_rub'],
-                                     sales_run_promo=f['sales_run_promo'])
+        for _ in validated_data:
+            store = Shop.objects.get(store=validated_data.get('store'))
+            sku = Product.objects.get(sku=validated_data.get('sku'))
+            fact = validated_data.get('fact')
+            for f in fact:
+                if Sales.objects.filter(shop=store, product=sku, date=f['date']).exists():
+                    Sales.objects.filter(shop=store, product=sku, 
+                                        date=f['date']).update(sales_type=f['sales_type'],
+                                        sales_units=f['sales_units'],
+                                        sales_units_promo=f['sales_units_promo'],
+                                        sales_rub=f['sales_rub'],
+                                        sales_run_promo=f['sales_run_promo'])
+                else:
+                    Sales.objects.create(shop=store, product=sku, 
+                                        date=f['date'], sales_type=f['sales_type'],
+                                        sales_units=f['sales_units'],
+                                        sales_units_promo=f['sales_units_promo'],
+                                        sales_rub=f['sales_rub'],
+                                        sales_run_promo=f['sales_run_promo'])
             
         return validated_data

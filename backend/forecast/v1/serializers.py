@@ -32,6 +32,10 @@ class ForecastPostSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({
                 'forecast_date': f'Первая дата в "sales_units" ({first_sales_date}) не совпадает с "forecast_date" ({data["forecast_date"]}).'
             })
+        if Forecast.objects.get(store=data['store'], product=data['product'], forecast_date=data['forecast_date']):
+            raise serializers.ValidationError({
+                'Прогноз для этого магазина, продукта и даты уже загружен.'
+            })
         # # Проверяем, что прогноз составлен на 14 дней
         # sales_dates = list(forecast['sales_units'].keys())
         # if len(sales_dates) != 14:
@@ -54,7 +58,8 @@ class ForecastGetSerializer(serializers.ModelSerializer):
     """
     #store = serializers.CharField(source='store.store')
     sku = serializers.CharField(source='product.sku')
-    forecast = serializers.DictField(source='forecast.sales_units')
+    forecast = serializers.DictField()
+    forecast_date = serializers.DateField()
     
     class Meta:
         model = Forecast

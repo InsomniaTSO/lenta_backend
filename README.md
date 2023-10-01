@@ -16,11 +16,17 @@
 `pip install -r requirements.txt`
 
 
-## 4. Применение миграций
+## 4. Применение миграций и загрузка тестовых данных. 
 
-`python manage.py makemigrations`
-
-`python manage.py migrate`
+python manage.py makemigrations categories&&
+python manage.py makemigrations forecast&&
+python manage.py makemigrations shops&&
+python manage.py makemigrations users&&
+python manage.py migrate &&
+python manage.py createsuperuser &&
+python manage.py load_shops &&
+python manage.py load_cat &&
+python manage.py load_sales
 
 
 ## 5. Создание суперпользователя

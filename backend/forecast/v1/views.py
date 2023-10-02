@@ -43,16 +43,16 @@ class ForecastViewSet(viewsets.ModelViewSet):
         """Метод для получения списка прогнозов."""
         queryset = self.filter_queryset(self.get_queryset())
         serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+        return Response({'data': serializer.data})
     
     def create(self, request, *args, **kwargs):
         """Метод для создания прогноза и возврата данных в нужном формате.
         """
-        serializer=self.get_serializer(data=request.data)
+        serializer=self.get_serializer(data=request.data['data'])
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
-        return Response({'data': [serializer.data]}, status=status.HTTP_201_CREATED, headers=headers)
+        return Response({'data': serializer.data}, status=status.HTTP_201_CREATED, headers=headers)
 
     @action(detail=False, methods=['get'])
     def download_file(self, request):

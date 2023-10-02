@@ -32,7 +32,7 @@ class ForecastPostSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({
                 'forecast_date': f'Первая дата в "sales_units" ({first_sales_date}) не совпадает с "forecast_date" ({data["forecast_date"]}).'
             })
-        if Forecast.objects.get(store=data['store'], product=data['product'], forecast_date=data['forecast_date']):
+        if Forecast.objects.filter(store=data['store'], product=data['product'], forecast_date=data['forecast_date']).first():
             raise serializers.ValidationError({
                 'Прогноз для этого магазина, продукта и даты уже загружен.'
             })

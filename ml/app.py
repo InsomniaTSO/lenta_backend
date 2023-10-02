@@ -57,27 +57,16 @@ def get_sales():
     response = requests.get(url)
     if response.status_code != 200:
         _logger.warning('Сервер недоступен. Неудалось получить историю продаж.')
-    return response.json()['data'][1:10]
+    return response.json()['data'][0:10]
 
 
 def main(today=date.today()):
     forecast_dates = [today + timedelta(days=d) for d in range(1, 14)]
     forecast_dates = [el.strftime('%Y-%m-%d') for el in forecast_dates]
-    categories = get_categories()
-    for store in get_stores():
-        result = []
-        for sale in get_sales():
-            sale_info = categories[sale['sku']]
-            sales = sale['fact']
-            prediction = forecast(store, sales, sale_info)
-            result.append({'store': store['store'],
-                           'forecast_date': today.strftime('%Y-%m-%d'),
-                           'forecast': {'sku': sale['sku'],
-                                        'sales_units': {k: v for k, v in zip(forecast_dates, prediction)}
-                                        }
-                          })
-        print(result)
-        requests.post(get_address(URL_FORECAST), json=result)  
+    sales = get_sales()
+    # requests.post(get_address(URL_FORECAST), json=result)
+    print(forecast_dates)
+
 
 
 if __name__ == '__main__':

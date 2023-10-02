@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'django_filters',
     'django_extensions',
     'drf_yasg',
+    'corsheaders',
     'users.apps.UsersConfig',
     'forecast.apps.ForecastConfig',
     'sales.apps.SalesConfig',
@@ -44,6 +45,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -113,7 +115,6 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
-        'rest_framework.authentication.SessionAuthentication', # Потом убрать
     ],
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend',],
 }
@@ -129,6 +130,17 @@ DJOSER = {
     }
 }
 
+CORS_ALLOW_ALL_ORIGINS = True 
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+]
+
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    'http://localhost:8000',
+]
 
 LANGUAGE_CODE = 'ru'
 

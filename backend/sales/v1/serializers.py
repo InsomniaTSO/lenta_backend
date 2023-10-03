@@ -70,24 +70,23 @@ class SalesFactSerializer(serializers.ModelSerializer):
         fields = ('store', 'sku', 'fact')
 
     def create(self, validated_data):
-        for _ in validated_data:
-            store = Shop.objects.get(store=validated_data.get('store'))
-            sku = Product.objects.get(sku=validated_data.get('sku'))
-            fact = validated_data.get('fact')
-            for f in fact:
-                if Sales.objects.filter(shop=store, product=sku, date=f['date']).exists():
-                    Sales.objects.filter(shop=store, product=sku, 
-                                        date=f['date']).update(sales_type=f['sales_type'],
-                                        sales_units=f['sales_units'],
-                                        sales_units_promo=f['sales_units_promo'],
-                                        sales_rub=f['sales_rub'],
-                                        sales_run_promo=f['sales_run_promo'])
-                else:
-                    Sales.objects.create(shop=store, product=sku, 
-                                        date=f['date'], sales_type=f['sales_type'],
-                                        sales_units=f['sales_units'],
-                                        sales_units_promo=f['sales_units_promo'],
-                                        sales_rub=f['sales_rub'],
-                                        sales_run_promo=f['sales_run_promo'])
+        store = Shop.objects.get(store=validated_data.get('store'))
+        sku = Product.objects.get(sku=validated_data.get('sku'))
+        fact = validated_data.get('fact')
+        for f in fact:
+            if Sales.objects.filter(shop=store, product=sku, date=f['date']).exists():
+                Sales.objects.filter(shop=store, product=sku, 
+                                    date=f['date']).update(sales_type=f['sales_type'],
+                                    sales_units=f['sales_units'],
+                                    sales_units_promo=f['sales_units_promo'],
+                                    sales_rub=f['sales_rub'],
+                                    sales_run_promo=f['sales_run_promo'])
+            else:
+                Sales.objects.create(shop=store, product=sku, 
+                                    date=f['date'], sales_type=f['sales_type'],
+                                    sales_units=f['sales_units'],
+                                    sales_units_promo=f['sales_units_promo'],
+                                    sales_rub=f['sales_rub'],
+                                    sales_run_promo=f['sales_run_promo'])
             
         return validated_data

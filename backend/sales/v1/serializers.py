@@ -1,5 +1,5 @@
 from categories.v1.models import Product
-from lenta_backend.consatants import DECIMAL_PLACES, MAX_DIGITS
+from lenta_backend.constants import DECIMAL_PLACES, MAX_DIGITS
 from rest_framework import serializers
 from sales.v1.models import Sales
 from shops.v1.models import Shop

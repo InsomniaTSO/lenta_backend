@@ -1,5 +1,5 @@
 from django.db import models
-from lenta_backend.consatants import MAX_ID_FIELD_LENGTH, UOM_CHOICES
+from lenta_backend.constants import MAX_ID_FIELD_LENGTH, UOM_CHOICES
 
 
 class Group(models.Model):

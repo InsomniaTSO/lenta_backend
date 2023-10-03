@@ -1,5 +1,5 @@
 from django.db import models
-from lenta_backend.consatants import MAX_ID_FIELD_LENGTH, FLAG_CHOICES
+from lenta_backend.constants import MAX_ID_FIELD_LENGTH, FLAG_CHOICES
 
 
 class City(models.Model):

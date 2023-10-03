@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework.exceptions import MethodNotAllowed
 from rest_framework.decorators import action
-from lenta_backend.consatants import ONLY_LIST_MSG
+from lenta_backend.constants import ONLY_LIST_MSG
 from sales.v1.models import Sales
 from sales.v1.serializers import SalesGroupSerializer, SalesFactSerializer
 from api.pagination import LimitPageNumberPagination

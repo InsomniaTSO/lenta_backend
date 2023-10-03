@@ -1,10 +1,11 @@
 import os
 from pathlib import Path
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-#BASE_DIR = Path(__file__).resolve().parent.parent
+# BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# HOME_DIR = BASE_DIR.replace('backend', '')
+BASE_DIR = Path(__file__).resolve().parent.parent
+HOME_DIR = BASE_DIR.parent if 'backend' in BASE_DIR.name else BASE_DIR
 
-HOME_DIR = BASE_DIR.replace('backend', '')
 
 SECRET_KEY = os.getenv('SECRET_KEY', default='xxxxxxxxxx')
 

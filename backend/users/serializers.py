@@ -4,7 +4,7 @@ from djoser.serializers import (TokenCreateSerializer, UserCreateSerializer,
                                 UserSerializer)
 from rest_framework import serializers
 
-from lenta_backend.consatants import FORBIDDEN_NAME
+from lenta_backend.constants import FORBIDDEN_NAME
 from .models import User
 
 

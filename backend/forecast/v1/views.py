@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.exceptions import MethodNotAllowed
 from rest_framework.decorators import action
 from rest_framework import status
-from lenta_backend.consatants import ONLY_LIST_MSG
+from lenta_backend.constants import ONLY_LIST_MSG
 from .models import Forecast
 from .serializers import ForecastPostSerializer, ForecastGetSerializer
 from shops.v1.models import Shop

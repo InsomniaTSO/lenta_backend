@@ -37,8 +37,8 @@ class ProductAPITests(APITestCase):
 
     # def test_group_filter(self):
     #     response = self.client.get(self.url, {'group': self.group1.group_id})
-    #     serializer = ProductSerializer(self.product1)
-    #     self.assertEqual(response.data['data'], [serializer.data])
+    #     response_data = [dict(item) for item in response.data['data']]
+    #     self.assertEqual(response_data, [serializer.data])
 
     # def test_category_filter(self):
     #     response = self.client.get(self.url, {'category': self.category1.cat_id})

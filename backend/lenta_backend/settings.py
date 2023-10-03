@@ -1,10 +1,11 @@
 import os
 from pathlib import Path
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-#BASE_DIR = Path(__file__).resolve().parent.parent
+# BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# HOME_DIR = BASE_DIR.replace('backend', '')
+BASE_DIR = Path(__file__).resolve().parent.parent
+HOME_DIR = BASE_DIR.parent if 'backend' in BASE_DIR.name else BASE_DIR
 
-HOME_DIR = BASE_DIR.replace('backend', '')
 
 SECRET_KEY = os.getenv('SECRET_KEY', default='xxxxxxxxxx')
 
@@ -151,7 +152,7 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = BASE_DIR / 'static'
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = BASE_DIR / 'media' # Или так MEDIA_ROOT = '/media'

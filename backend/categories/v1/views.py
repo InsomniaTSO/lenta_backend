@@ -15,6 +15,6 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
 
     def list(self, request):
         """Метод для получения списка товарной иерархии."""
-        queryset = self.get_queryset()
+        queryset = self.filter_queryset(self.get_queryset())
         serializer = self.get_serializer(queryset, many=True)
         return Response({'data': serializer.data})

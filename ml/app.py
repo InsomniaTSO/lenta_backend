@@ -1,5 +1,3 @@
-import schedule
-import threading
 import requests
 import logging
 from datetime import date, timedelta
@@ -17,18 +15,6 @@ api_host = API_HOST
 
 
 _logger = logging.getLogger(__name__)
-
-def run_continuously():
-    cease_continuous_run = threading.Event()
-    class ScheduleThread(threading.Thread):
-        @classmethod
-        def run(cls):
-            while not cease_continuous_run.is_set():
-                schedule.run_pending()
-    continuous_thread = ScheduleThread()
-    continuous_thread.start()
-    return cease_continuous_run
-
 
 def setup_logging():
 
@@ -50,7 +36,7 @@ def get_stores():
     if response.status_code != 200:
         _logger.warning('Сервер недоступен. Неудалось получить список магазинов.')
         return []
-    return response.json()['data'][0:2]
+    return response.json()['data']
 
 
 def get_categories():
@@ -59,7 +45,7 @@ def get_categories():
     if response.status_code != 200:
         _logger.warning('Сервер недоступен. Неудалось получить список категорий.')
         return {}
-    return response.json()['data'][0:2]
+    return response.json()['data']
 
 
 def get_sales():
@@ -71,37 +57,34 @@ def get_sales():
 
 
 def main(today=date.today()):
-    forecast_dates = [today + timedelta(days=d) for d in range(0, 13)]
-    forecast_dates = [el.strftime('%Y-%m-%d') for el in forecast_dates]
-    categories = get_categories()
-    stores = get_stores()
-    result = dict()
-    result_list = []
-    for store in stores:
-        for sku in categories:
-            result['store'] = store['store']
-            result['forecast_date'] = today.strftime('%Y-%m-%d')
-            result['forecast'] = dict()
-            result['forecast']['sku']= sku['sku']
-            result['forecast']['sales_units']= dict()
-            for date in forecast_dates:
-                result['forecast']['sales_units'][date] = random.randint(1, 20)
-            result_list.append(result)
-            result = dict()
-    headers = {'Content-type': 'application/json'}
-    response = requests.post(get_address(URL_FORECAST), 
-                      json={"data" : result_list}, 
-                      headers=headers)
-    if response.status_code != 200:
-        _logger.info(f'Прогноз успешно загружен. {today.strftime("%Y-%m-%d")}')
+    try:
+        forecast_dates = [today + timedelta(days=d) for d in range(0, 13)]
+        forecast_dates = [el.strftime('%Y-%m-%d') for el in forecast_dates]
+        categories = get_categories()
+        stores = get_stores()
+        result = dict()
+        result_list = []
+        for store in stores:
+            for sku in categories:
+                result['store'] = store['store']
+                result['forecast_date'] = today.strftime('%Y-%m-%d')
+                result['forecast'] = dict()
+                result['forecast']['sku']= sku['sku']
+                result['forecast']['sales_units']= dict()
+                for date in forecast_dates:
+                    result['forecast']['sales_units'][date] = random.randint(1, 20)
+                result_list.append(result)
+                result = dict()
+        headers = {'Content-type': 'application/json'}
+        response = requests.post(get_address(URL_FORECAST), 
+                        json={"data" : result_list}, 
+                        headers=headers)
+        if response.status_code != 200:
+            _logger.info(f'Прогноз успешно загружен. {today.strftime("%Y-%m-%d")}')
+    except:
+        print('Something Wrong in main function',exc_info=True)
     
 
 if __name__ == '__main__':
     setup_logging()
-    format = "%(asctime)s: %(message)s"
-    logging.basicConfig(format=format, level=logging.INFO, datefmt="%H:%M:%S")
-    logging.info("Main - starting thread")
-    # schedule.every().day.do(main())
-    schedule.every().minute.do(main)
-    stop_run_continuously = run_continuously()
-    stop_run_continuously.set()
+    main()

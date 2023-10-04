@@ -6,11 +6,11 @@ from rest_framework import status
 from lenta_backend.constants import ONLY_LIST_MSG
 from .models import Forecast
 from .serializers import ForecastPostSerializer, ForecastGetSerializer
-from shops.v1.models import Shop
 from datetime import datetime
 from django.http import HttpResponse
 from .filters import ForecastFilter
-from api.pagination import LimitPageNumberPagination
+from .get_xls import get_xls
+from rest_framework.renderers import JSONRenderer
 
 
 class ForecastViewSet(viewsets.ModelViewSet): 
@@ -57,11 +57,14 @@ class ForecastViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])
     def download_file(self, request):
         """
-        Возвращает xls-файл с предсказаниями.
+        Возвращает xlsx-файл с предсказаниями.
         """
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer(queryset, many=True)
+        data = JSONRenderer().render(serializer.data)
         today = datetime.today().strftime('%d-%m-%Y')
-        filename = f'{today}_forecast.xls'
-        forecast = f'{today}_forecast.xls'
+        filename = f'{today}_forecast.xlsx'
+        forecast = get_xls(data).getvalue()
         response = HttpResponse(
             forecast, content_type='application/vnd.ms-excel'
         )

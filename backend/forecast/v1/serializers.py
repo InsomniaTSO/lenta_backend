@@ -2,7 +2,7 @@ from rest_framework import serializers
 from datetime import timedelta
 from .models import Forecast
 from categories.v1.models import Product
-
+from shops.v1.models import Shop
 
 class ForecastPostSerializer(serializers.ModelSerializer):
     """Сериализатор для отправки данных прогноза. 
@@ -32,25 +32,27 @@ class ForecastPostSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({
                 'forecast_date': f'Первая дата в "sales_units" ({first_sales_date}) не совпадает с "forecast_date" ({data["forecast_date"]}).'
             })
-        if Forecast.objects.filter(store=data['store'], product=data['product'], forecast_date=data['forecast_date']).first():
-            raise serializers.ValidationError({
-                'Прогноз для этого магазина, продукта и даты уже загружен.'
-            })
-        # # Проверяем, что прогноз составлен на 14 дней
-        # sales_dates = list(forecast['sales_units'].keys())
-        # if len(sales_dates) != 14:
-        #     raise serializers.ValidationError({
-        #         'forecast': 'Данные "sales_units" должны содержать прогноз на 14 дней.'
-        #     })
-        # # Проверяем, что даты в прогнозе идут по порядку
-        # current_date = data['forecast_date']
-        # for date_str in sales_dates:
-        #     if date_str != str(current_date):
-        #         raise serializers.ValidationError({
-        #             'forecast': f'Данные "sales_units" содержат неверную дату {date_str}. Ожидалось {current_date}.'
-        #         })
-        #     current_date += timedelta(days=1)
         return data
+    
+    def create(self, validated_data):
+        forecast_data = validated_data.get('forecast')
+        store = Shop.objects.get(store=validated_data.get('store'))
+        sku = Product.objects.get(sku=forecast_data['sku'])
+        forecast_date = validated_data.get('forecast_date')
+        forecast = forecast_data['sales_units']
+        if Forecast.objects.filter(store=store, 
+                                   product=sku, 
+                                   forecast_date=forecast_date).exists():
+            Forecast.objects.filter(store=store, 
+                                    product=sku, 
+                                    forecast_date=forecast_date).update(forecast=forecast)
+        else:
+            Forecast.objects.create(store=store, 
+                                    product=sku, 
+                                    forecast_date=forecast_date,
+                                    forecast=forecast)
+        return validated_data
+
 
 class ForecastGetSerializer(serializers.ModelSerializer):
     """Сериализатор для получения данных прогноза. 

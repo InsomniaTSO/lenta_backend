@@ -16,6 +16,6 @@ class ShopViewSet(viewsets.ReadOnlyModelViewSet):
 
     def list(self, request):
         """Метод для получения списка магазинов."""
-        queryset = self.get_queryset()
+        queryset = self.filter_queryset(self.get_queryset())
         serializer = self.get_serializer(queryset, many=True)
         return Response({'data': serializer.data})

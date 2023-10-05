@@ -70,16 +70,16 @@ class ShopAPITests(APITestCase):
         response_data = [dict(item) for item in response.data['data']] 
         self.assertEqual(response_data, [serializer.data])
 
-    # def test_size_filter(self): 
-    #     """Тест фильтрации магазина по size.""" 
-    #     response = self.client.get(self.url, {'size': 1}) 
-    #     serializer = ShopsSerializer(self.shop_1) 
-    #     response_data = [dict(item) for item in response.data['data']] 
-    #     self.assertEqual(response_data, [serializer.data])
+    def test_size_filter(self): 
+        """Тест фильтрации магазина по size.""" 
+        response = self.client.get(self.url, {'size': 1}) 
+        serializer = ShopsSerializer(self.shop_1) 
+        response_data = [dict(item) for item in response.data['data']] 
+        self.assertEqual(response_data, [serializer.data])
 
-    # def test_is_active_filter(self): 
-    #     """Тест фильтрации магазина по  флагу is_active.""" 
-    #     response = self.client.get(self.url, {'is_active': 1}) 
-    #     serializer = ShopsSerializer(self.shop_1) 
-    #     response_data = [dict(item) for item in response.data['data']] 
-    #     self.assertEqual(response_data, [serializer.data])
+    def test_is_active_filter(self): 
+        """Тест фильтрации магазина по  флагу is_active.""" 
+        response = self.client.get(self.url, {'is_active': 1}) 
+        serializer = ShopsSerializer(self.shop_1) 
+        response_data = [dict(item) for item in response.data['data']] 
+        self.assertEqual(response_data, [serializer.data])

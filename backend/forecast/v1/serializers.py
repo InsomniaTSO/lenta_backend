@@ -60,9 +60,13 @@ class ForecastGetSerializer(serializers.ModelSerializer):
     """
     #store = serializers.CharField(source='store.store')
     sku = serializers.CharField(source='product.sku')
+    group = serializers.CharField(source='product.group')
     forecast = serializers.DictField()
     forecast_date = serializers.DateField()
-    
+    category = serializers.CharField(source='product.category')
+    subcategory = serializers.CharField(source='product.subcategory')
+    uom = serializers.CharField(source='product.uom')
+
     class Meta:
         model = Forecast
-        fields = ['store', 'sku', 'forecast_date', 'forecast']
+        fields = ['store', 'sku', 'group', 'category', 'subcategory', 'uom', 'forecast_date', 'forecast']

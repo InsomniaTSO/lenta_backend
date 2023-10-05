@@ -31,6 +31,7 @@ pytz==2023.3.post1
 PyYAML==6.0.1
 requests==2.31.0
 requests-oauthlib==1.3.1
+schedule==1.2.1
 six==1.16.0
 social-auth-app-django==5.3.0
 social-auth-core==4.4.2
@@ -39,5 +40,3 @@ typing_extensions==4.8.0
 tzdata==2023.3
 uritemplate==4.1.1
 urllib3==2.0.5
-openpyxl==3.1.2
-xlsxwriter==3.1.5

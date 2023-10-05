@@ -1,5 +1,5 @@
 from pathlib import Path
-import csv
+import pandas as pd
 from django.core.management import BaseCommand
 from forecast.v1.models import Forecast
 from shops.v1.models import Shop
@@ -26,36 +26,45 @@ class Command(BaseCommand):
         return Path(__file__).parents[3] / 'data' / 'sales_submission_test.csv' 
 
     def _load_data_from_csv(self, path_file: Path): 
-        with open(path_file, encoding='utf-8') as file: 
-            csvfilereader = csv.reader(file, delimiter=",") 
-            next(csvfilereader)
-            counter = 0
-            for row in csvfilereader:
-                if counter<100: 
-                    self._create_forecast_from_row(row) 
-                    counter += 1
+        df = pd.read_csv(path_file)
+        df = df.sort_values(by=["st_id", "pr_sku_id", "date"])
+        df = df.reset_index()
+        prev_st = ""
+        prev_sku = ""
+        forecast_d = dict()
+        for index, row in df.iterrows():
+            try:
+                shop = Shop.objects.get(store=row["st_id"]) 
+                product = Product.objects.get(sku=row["pr_sku_id"]) 
+                forecast_date = row["date"]
+                target_value = row["target"]
+                if ((row["st_id"] == prev_st or prev_st == "") and 
+                    (row["pr_sku_id"] == prev_sku or prev_sku == "")):
+                    forecast_d[forecast_date] = target_value
                 else:
-                    break
-
-    def _create_forecast_from_row(self, row): 
-        try: 
-            shop = Shop.objects.get(store=row[1]) 
-            product = Product.objects.get(sku=row[2]) 
-            forecast_date = row[3]
-            target_value = row[4]
-            
-            # Создание или обновление записи в базе данных
-            forecast, created = Forecast.objects.get_or_create(
-                store=shop, 
-                product=product, 
-                forecast_date=forecast_date, 
-                defaults={'forecast': {'target': target_value}}
-            )
-            
-            # Если запись уже существует, обновляем её значение
-            if not created:
-                forecast.forecast = {'target': target_value}
-                forecast.save()
-                
-        except ObjectDoesNotExist as e: 
-            logging.error(f'Error while processing row {row}. Error: {str(e)}')
+                    if Forecast.objects.filter(
+                        store=shop, 
+                        product=product, 
+                        forecast_date=forecast_date
+                    ).exists:
+                        Forecast.objects.filter(
+                        store=shop, 
+                        product=product, 
+                        forecast_date=forecast_date
+                    ).update(
+                        store=shop, 
+                        product=product, 
+                        forecast_date=forecast_date, 
+                        forecast=forecast_d)
+                    else:
+                        Forecast.objects.create(
+                        store=shop, 
+                        product=product, 
+                        forecast_date=forecast_date, 
+                        forecast=forecast_d)
+                    forecast_d = dict()
+                    forecast_d[forecast_date] = target_value
+                prev_st = row["st_id"]  
+                prev_sku = row["pr_sku_id"]
+            except ObjectDoesNotExist as e: 
+                logging.error(f'Error while processing row {row}. Error: {str(e)}')

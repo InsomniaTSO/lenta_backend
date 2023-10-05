@@ -9,6 +9,7 @@
 ## 2. Переход в директорию проекта
 
 `cd lenta_backend`
+`cd backend`
 
 
 ## 3. Установка зависимостей
@@ -18,14 +19,23 @@
 
 ## 4. Применение миграций и загрузка тестовых данных. 
 
-python manage.py makemigrations categories&&
-python manage.py makemigrations forecast&&
-python manage.py makemigrations shops&&
-python manage.py makemigrations users&&
-python manage.py migrate &&
-python manage.py load_shops &&
-python manage.py load_cat &&
-python manage.py load_sales
+`python manage.py makemigrations categories`
+
+`python manage.py makemigrations forecast`
+
+`python manage.py makemigrations shops`
+
+`python manage.py makemigrations users`
+
+`python manage.py migrate`
+
+`python manage.py load_shops`
+
+`python manage.py load_cat`
+
+`python manage.py load_sales`
+
+`python manage.py load_forecast`
 
 
 ## 5. Создание суперпользователя

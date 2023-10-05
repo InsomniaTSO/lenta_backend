@@ -29,8 +29,13 @@ class Command(BaseCommand):
         with open(path_file, encoding='utf-8') as file: 
             csvfilereader = csv.reader(file, delimiter=",") 
             next(csvfilereader)
-            for row in csvfilereader: 
-                self._create_forecast_from_row(row) 
+            counter = 0
+            for row in csvfilereader:
+                if counter<100: 
+                    self._create_forecast_from_row(row) 
+                    counter += 1
+                else:
+                    break
 
     def _create_forecast_from_row(self, row): 
         try: 

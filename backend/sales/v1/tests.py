@@ -12,9 +12,6 @@ class SalesAPITests(APITestCase):
     """
     
     def setUp(self):
-        """Настройка начальных условий перед каждым тестом.
-        """
-        
         # Создание тестовых данных для магазина
         self.city = City.objects.create(city_id='test_city')
         self.division = Division.objects.create(division_code_id='test_div')
@@ -80,12 +77,12 @@ class SalesAPITests(APITestCase):
         self.assertEqual(len(response.data), 1)
         # self.assertEqual(response.data[0]['sales_units'], 10)
 
-    # def test_get_sales_no_data(self):
-    #     """Тестирование получения списка продаж с неверными параметрами фильтрации.
-    #     """
-    #     response = self.client.get(self.url, {'store': 999, 'sku': 999})  # Несуществующие ID
-    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
-    #     self.assertEqual(response.data['error'], 'Не найдены данные с указанными параметрами')
+    def test_get_sales_no_data(self):
+        """Тестирование получения списка продаж с неверными параметрами фильтрации.
+        """
+        response = self.client.get(self.url, {'store': 999, 'sku': 999})  # Несуществующие ID
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['error'], 'Не найдены данные с указанными параметрами')
 
     # def test_get_sales_invalid_method(self):
     #     """Тестирование попытки получить детализацию продажи, хотя это не разрешено.

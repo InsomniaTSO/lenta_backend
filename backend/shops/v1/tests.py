@@ -35,40 +35,40 @@ class ShopAPITests(APITestCase):
         serializer = ShopsSerializer([self.shop_1, self.shop_2], many=True) 
         self.assertEqual(response.data['data'], serializer.data) 
  
-    # def test_store_filter(self): 
-    #     """Тест фильтрации магазина по store.""" 
-    #     response = self.client.get(self.url, {'store': 'store1'}) 
-    #     serializer = ShopsSerializer(self.shop_1) 
-    #     response_data = [dict(item) for item in response.data['data']] 
-    #     self.assertEqual(response_data, [serializer.data])
+    def test_store_filter(self): 
+        """Тест фильтрации магазина по store.""" 
+        response = self.client.get(self.url, {'store': 'store1'}) 
+        serializer = ShopsSerializer(self.shop_1) 
+        response_data = [dict(item) for item in response.data['data']] 
+        self.assertEqual(response_data, [serializer.data])
 
-    # def test_city_filter(self): 
-    #     """Тест фильтрации магазина по city.""" 
-    #     response = self.client.get(self.url, {'city': 'test_city_1'}) 
-    #     serializer = ShopsSerializer(self.shop_1) 
-    #     response_data = [dict(item) for item in response.data['data']] 
-    #     self.assertEqual(response_data, [serializer.data])
+    def test_city_filter(self): 
+        """Тест фильтрации магазина по city.""" 
+        response = self.client.get(self.url, {'city': 'test_city_1'}) 
+        serializer = ShopsSerializer(self.shop_1) 
+        response_data = [dict(item) for item in response.data['data']] 
+        self.assertEqual(response_data, [serializer.data])
 
-    # def test_division_filter(self): 
-    #     """Тест фильтрации магазина по division.""" 
-    #     response = self.client.get(self.url, {'division': 'test_div_1'}) 
-    #     serializer = ShopsSerializer(self.shop_1) 
-    #     response_data = [dict(item) for item in response.data['data']] 
-    #     self.assertEqual(response_data, [serializer.data])
+    def test_division_filter(self): 
+        """Тест фильтрации магазина по division.""" 
+        response = self.client.get(self.url, {'division': 'test_div_1'}) 
+        serializer = ShopsSerializer(self.shop_1) 
+        response_data = [dict(item) for item in response.data['data']] 
+        self.assertEqual(response_data, [serializer.data])
 
-    # def test_format_filter(self): 
-    #     """Тест фильтрации магазина по type_format.""" 
-    #     response = self.client.get(self.url, {'type_format': 1}) 
-    #     serializer = ShopsSerializer(self.shop_1) 
-    #     response_data = [dict(item) for item in response.data['data']] 
-    #     self.assertEqual(response_data, [serializer.data])
+    def test_format_filter(self): 
+        """Тест фильтрации магазина по type_format.""" 
+        response = self.client.get(self.url, {'type_format': 1}) 
+        serializer = ShopsSerializer(self.shop_1) 
+        response_data = [dict(item) for item in response.data['data']] 
+        self.assertEqual(response_data, [serializer.data])
 
-    # def test_location_filter(self): 
-    #     """Тест фильтрации магазина по loc.""" 
-    #     response = self.client.get(self.url, {'loc': 1}) 
-    #     serializer = ShopsSerializer(self.shop_1) 
-    #     response_data = [dict(item) for item in response.data['data']] 
-    #     self.assertEqual(response_data, [serializer.data])
+    def test_location_filter(self): 
+        """Тест фильтрации магазина по loc.""" 
+        response = self.client.get(self.url, {'loc': 1}) 
+        serializer = ShopsSerializer(self.shop_1) 
+        response_data = [dict(item) for item in response.data['data']] 
+        self.assertEqual(response_data, [serializer.data])
 
     # def test_size_filter(self): 
     #     """Тест фильтрации магазина по size.""" 

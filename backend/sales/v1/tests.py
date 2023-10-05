@@ -12,9 +12,6 @@ class SalesAPITests(APITestCase):
     """
     
     def setUp(self):
-        """Настройка начальных условий перед каждым тестом.
-        """
-        
         # Создание тестовых данных для магазина
         self.city = City.objects.create(city_id='test_city')
         self.division = Division.objects.create(division_code_id='test_div')
@@ -38,13 +35,13 @@ class SalesAPITests(APITestCase):
             shop=self.shop,
             product=self.product,
             date="2023-10-05",
-            sales_type=1,  # Примерное значение из FLAG_CHOICES
+            sales_type=1,
             sales_units=10,
             sales_units_promo=5,
             sales_rub=1000.00,
             sales_run_promo=500.00
         )
-        self.url = reverse('sales-list')  # Замените 'sales-list', если у вас другое имя URL-шаблона
+        self.url = reverse('sales-list')
 
     def test_get_sales(self):
         """Тестирование получения списка продаж.
@@ -83,7 +80,7 @@ class SalesAPITests(APITestCase):
     def test_get_sales_no_data(self):
         """Тестирование получения списка продаж с неверными параметрами фильтрации.
         """
-        response = self.client.get(self.url, {'store': 999, 'sku': 999})  # Несуществующие ID
+        response = self.client.get(self.url, {'store': 999, 'sku': 999})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['error'], 'Не найдены данные с указанными параметрами')
 

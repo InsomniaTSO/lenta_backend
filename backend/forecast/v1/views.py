@@ -39,11 +39,11 @@ class ForecastViewSet(viewsets.ModelViewSet):
             return ForecastPostSerializer
         return self.serializer_class
 
-    def list(self, request):
-        """Метод для получения списка прогнозов."""
-        queryset = self.filter_queryset(self.get_queryset())
-        serializer = self.get_serializer(queryset, many=True)
-        return Response({'data': serializer.data})
+    # def list(self, request):
+    #     """Метод для получения списка прогнозов."""
+    #     queryset = self.filter_queryset(self.get_queryset())
+    #     serializer = self.get_serializer(queryset, many=True)
+    #     return Response({'data': serializer.data})
     
     def create(self, request, *args, **kwargs):
         """Метод для создания прогноза и возврата данных в нужном формате.

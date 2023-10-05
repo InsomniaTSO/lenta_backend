@@ -89,4 +89,4 @@ class Shop(models.Model):
         verbose_name_plural = 'Магазины'
 
     def __str__(self):
-        return str(self.store) 
+        return str(self.store)

@@ -18,10 +18,6 @@ class Command(BaseCommand):
     def handle(self, *args, **options): 
         path_file = self._get_path_to_csv_file() 
         
-        # if Forecast.objects.exists(): 
-        #     logging.info('Данные для прогноза уже загружены') 
-        #     return 
-        
         logging.info('Загрузка данных прогноза') 
         self._load_data_from_csv(path_file) 
         logging.info('Загрузка завершена успешно') 
@@ -32,7 +28,7 @@ class Command(BaseCommand):
     def _load_data_from_csv(self, path_file: Path): 
         with open(path_file, encoding='utf-8') as file: 
             csvfilereader = csv.reader(file, delimiter=",") 
-            next(csvfilereader)  # Пропустить заголовок
+            next(csvfilereader)
             for row in csvfilereader: 
                 self._create_forecast_from_row(row) 
 

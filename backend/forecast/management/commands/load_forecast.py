@@ -1,5 +1,4 @@
 from pathlib import Path
-import json
 import pandas as pd
 from django.core.management import BaseCommand
 from forecast.v1.models import Forecast
@@ -69,5 +68,3 @@ class Command(BaseCommand):
                 prev_sku = row["pr_sku_id"]
             except ObjectDoesNotExist as e: 
                 logging.error(f'Error while processing row {row}. Error: {str(e)}')
-
-

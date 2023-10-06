@@ -72,5 +72,3 @@ class Command(BaseCommand):
                 prev_sku = row["pr_sku_id"]
             except ObjectDoesNotExist as e: 
                 logging.error(f'Error while processing row {row}. Error: {str(e)}')
-
-

@@ -1,5 +1,4 @@
 from pathlib import Path
-import json
 import pandas as pd
 from django.core.management import BaseCommand
 from forecast.v1.models import Forecast
@@ -17,8 +16,12 @@ class Command(BaseCommand):
     help = "python manage.py load_forecast" 
 
     def handle(self, *args, **options): 
-        path_file = self._get_path_to_csv_file() 
-        
+        path_file = self._get_path_to_csv_file()
+
+        if Product.objects.exists():
+            logging.info('Данные прогноза уже загружены')
+            return 
+             
         logging.info('Загрузка данных прогноза') 
         self._load_data_from_csv(path_file) 
         logging.info('Загрузка завершена успешно') 

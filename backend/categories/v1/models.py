@@ -1,4 +1,5 @@
 from django.db import models
+
 from lenta_backend.constants import MAX_ID_FIELD_LENGTH, UOM_CHOICES
 
 

@@ -1,12 +1,12 @@
+import csv
+import logging
 from pathlib import Path
 import pandas as pd
 from django.core.management import BaseCommand
+
+from categories.v1.models import Product
 from forecast.v1.models import Forecast
 from shops.v1.models import Shop
-from categories.v1.models import Product
-import logging
-from django.core.exceptions import ObjectDoesNotExist
-
 
 logging.basicConfig(level=logging.INFO)
 

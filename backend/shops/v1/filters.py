@@ -1,5 +1,7 @@
 import django_filters
+
 from .models import Shop
+
 
 class ShopFilter(django_filters.FilterSet):
     store = django_filters.AllValuesMultipleFilter(lookup_expr='icontains')

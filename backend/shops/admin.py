@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.contrib.admin import register
-from shops.v1.models import City, Division, Format, Location, Size, Shop
+
+from shops.v1.models import City, Division, Format, Location, Shop, Size
 
 
 @register(City)

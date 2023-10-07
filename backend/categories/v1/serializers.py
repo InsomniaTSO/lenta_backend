@@ -1,4 +1,5 @@
 from rest_framework import serializers
+
 from categories.v1.models import Product
 
 

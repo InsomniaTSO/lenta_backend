@@ -1,6 +1,8 @@
-from django.core.management import BaseCommand
-from forecast.v1.models import Forecast
 import logging
+
+from django.core.management import BaseCommand
+
+from forecast.v1.models import Forecast
 
 logging.basicConfig(level=logging.INFO)
 

@@ -1,10 +1,11 @@
 from django.urls import include, path
 from djoser.views import TokenDestroyView
 from rest_framework.routers import DefaultRouter
+
 from categories.v1.views import ProductViewSet
-from shops.v1.views import ShopViewSet
-from sales.v1.views import SalesViewSet
 from forecast.v1.views import ForecastViewSet
+from sales.v1.views import SalesViewSet
+from shops.v1.views import ShopViewSet
 from users.views import CustomTokenCreateView, CustomUserViewSet
 
 v1_router = DefaultRouter()

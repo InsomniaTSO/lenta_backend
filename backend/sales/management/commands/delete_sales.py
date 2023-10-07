@@ -1,6 +1,8 @@
-from django.core.management import BaseCommand
-from sales.v1.models import Sales
 import logging
+
+from django.core.management import BaseCommand
+
+from sales.v1.models import Sales
 
 logging.basicConfig(level=logging.INFO)
 

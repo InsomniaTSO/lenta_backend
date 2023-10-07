@@ -1,8 +1,12 @@
-from rest_framework import serializers
 from datetime import timedelta
-from .models import Forecast
+
+from rest_framework import serializers
+
 from categories.v1.models import Product
 from shops.v1.models import Shop
+
+from .models import Forecast
+
 
 class ForecastPostSerializer(serializers.ModelSerializer):
     """Сериализатор для отправки данных прогноза. 
@@ -52,7 +56,6 @@ class ForecastGetSerializer(serializers.ModelSerializer):
     """Сериализатор для получения данных прогноза. 
     Предоставляет информацию о магазине, продукте и прогнозе продаж.
     """
-    #store = serializers.CharField(source='store.store')
     sku = serializers.CharField(source='product.sku')
     group = serializers.CharField(source='product.group')
     forecast = serializers.DictField()

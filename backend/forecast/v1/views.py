@@ -1,16 +1,18 @@
-from rest_framework import viewsets, status
-from rest_framework.response import Response
-from rest_framework.exceptions import MethodNotAllowed
-from rest_framework.decorators import action
-from rest_framework import status
-from lenta_backend.constants import ONLY_LIST_MSG
-from .models import Forecast
-from .serializers import ForecastPostSerializer, ForecastGetSerializer
 from datetime import datetime
+
 from django.http import HttpResponse
+from rest_framework import status, viewsets
+from rest_framework.decorators import action
+from rest_framework.exceptions import MethodNotAllowed
+from rest_framework.renderers import JSONRenderer
+from rest_framework.response import Response
+
+from lenta_backend.constants import ONLY_LIST_MSG
+
 from .filters import ForecastFilter
 from .get_xls import get_xls
-from rest_framework.renderers import JSONRenderer
+from .models import Forecast
+from .serializers import ForecastGetSerializer, ForecastPostSerializer
 
 
 class ForecastViewSet(viewsets.ModelViewSet): 
@@ -20,7 +22,7 @@ class ForecastViewSet(viewsets.ModelViewSet):
     http_method_names = ['get', 'post']
     filterset_class = ForecastFilter
 
-    def retrieve(self, request): 
+    def retrieve(self, request, pk=None): 
         """Ограничение метода retrieve.""" 
         raise MethodNotAllowed('GET', detail=ONLY_LIST_MSG)
     
@@ -55,7 +57,7 @@ class ForecastViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         """Метод для создания прогноза и возврата данных в нужном формате.
         """
-        serializer=self.get_serializer(data=request.data['data'])
+        serializer=self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)

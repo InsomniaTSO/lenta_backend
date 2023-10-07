@@ -1,7 +1,8 @@
 from django.contrib import admin
 from django.contrib.admin import register
 
-from categories.v1.models import Group, Category, Subcategory, Product
+from categories.v1.models import Category, Group, Product, Subcategory
+
 
 @register(Category)
 class CategoryAdmin(admin.ModelAdmin):

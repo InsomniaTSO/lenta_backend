@@ -1,5 +1,7 @@
 import django_filters
+
 from .models import Forecast
+
 
 class ForecastFilter(django_filters.FilterSet):
     """Фильтр для прогнозов. Позволяет фильтровать прогнозы по дате прогноза,

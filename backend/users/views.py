@@ -5,8 +5,6 @@ from rest_framework import status, viewsets
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from rest_framework.status import (HTTP_200_OK, HTTP_201_CREATED,
-                                   HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST)
 
 from .models import User
 from .serializers import CustomUserSerializer, SignupSerializer
@@ -36,8 +34,6 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         Возвращает сериализатор в зависимости от
         используемого метода.
         """
-        if self.action == "create":
+        if self.action == 'create':
             return SignupSerializer
         return self.serializer_class
-
-

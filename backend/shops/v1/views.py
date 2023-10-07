@@ -13,8 +13,9 @@ class ShopViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = Shop.objects.all()
     serializer_class = ShopsSerializer
+    permission_classes = (AllowAny,)
     filterset_class = ShopFilter
-    # pagination_class = LimitPageNumberPagination
+    pagination_class = LimitPageNumberPagination
 
     def list(self, request):
         """Метод для получения списка магазинов."""

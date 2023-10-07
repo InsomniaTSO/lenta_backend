@@ -50,7 +50,7 @@ class ForecastViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         """Метод для создания прогноза и возврата данных в нужном формате.
         """
-        serializer=self.get_serializer(data=request.data['data'])
+        serializer=self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)

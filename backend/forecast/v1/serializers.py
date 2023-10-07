@@ -62,7 +62,6 @@ class ForecastGetSerializer(serializers.ModelSerializer):
     """Сериализатор для получения данных прогноза. 
     Предоставляет информацию о магазине, продукте и прогнозе продаж.
     """
-    #store = serializers.CharField(source='store.store')
     sku = serializers.CharField(source='product.sku')
     group = serializers.CharField(source='product.group')
     forecast = serializers.DictField()

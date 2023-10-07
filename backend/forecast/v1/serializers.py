@@ -30,12 +30,6 @@ class ForecastPostSerializer(serializers.ModelSerializer):
         # Проверяем наличие 'sales_units' в данных
         if 'sales_units' not in forecast_data: 
             raise serializers.ValidationError({'forecast': 'Поле "sales_units" отсутствует.'})
-        # Проверяем, что первая дата в 'sales_units' соответствует 'forecast_date'
-        first_sales_date = next(iter(forecast_data['sales_units']))
-        if first_sales_date != str(data['forecast_date']):
-            raise serializers.ValidationError({
-                'forecast_date': f'Первая дата в "sales_units" ({first_sales_date}) не совпадает с "forecast_date" ({data["forecast_date"]}).'
-            })
         return data
     
     def create(self, validated_data):

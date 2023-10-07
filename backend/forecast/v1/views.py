@@ -41,11 +41,18 @@ class ForecastViewSet(viewsets.ModelViewSet):
             return ForecastPostSerializer
         return self.serializer_class
 
-    # def list(self, request):
-    #     """Метод для получения списка прогнозов."""
-    #     queryset = self.filter_queryset(self.get_queryset())
-    #     serializer = self.get_serializer(queryset, many=True)
-    #     return Response({'data': serializer.data})
+    def list(self, request):
+        """Метод для получения списка прогнозов."""
+        store_ids = self.request.query_params.getlist('store')
+        sku_ids = self.request.query_params.getlist('product')
+        if not store_ids or not sku_ids:
+            return Response(
+                {'error': 'Не найдены данные с указанными параметрами'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer(queryset, many=True)
+        return Response({'data': serializer.data})
     
     def create(self, request, *args, **kwargs):
         """Метод для создания прогноза и возврата данных в нужном формате.

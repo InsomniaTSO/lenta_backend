@@ -1,3 +1,4 @@
-API_PORT='8000'
+API_PORT=''
+# API_HOST='localhost'
 API_HOST='host.docker.internal'
 API_VERSION = 'v1'

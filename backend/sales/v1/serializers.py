@@ -6,8 +6,19 @@ from sales.v1.models import Sales
 from shops.v1.models import Shop
 
 
-class SalesSerializer(serializers.ModelSerializer):
+class SalesFullSerializer(serializers.ModelSerializer):
     """Основной сериализатор для объектов Sales. 
+    """
+    
+    class Meta: 
+        model = Sales 
+        fields = ('shop', 'product', 'date', 'sales_type', 'sales_units',
+                  'sales_units_promo', 'sales_rub', 
+                  'sales_run_promo')
+
+
+class SalesSerializer(serializers.ModelSerializer):
+    """Cериализатор для объектов Sales. 
        Включает в себя информацию фактических данных о продажах. 
     """
     

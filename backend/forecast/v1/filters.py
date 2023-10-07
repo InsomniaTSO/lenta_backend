@@ -8,7 +8,7 @@ class ForecastFilter(django_filters.FilterSet):
     магазину, продукту и по связанным с ними полям.
     """
     store = django_filters.AllValuesMultipleFilter(field_name='store__store', )
-    product = django_filters.AllValuesMultipleFilter(field_name='product__sku')
+    sku = django_filters.AllValuesMultipleFilter(field_name='product__sku')
     forecast_date = django_filters.DateFilter(field_name='forecast_date')
     city = django_filters.AllValuesMultipleFilter(field_name='store__city__city_id')
     division = django_filters.AllValuesMultipleFilter(field_name='store__division__division_code_id')
@@ -26,7 +26,7 @@ class ForecastFilter(django_filters.FilterSet):
         model = Forecast
         fields = [
             'store',
-            'product',
+            'sku',
             'forecast_date',
             'city',
             'division',

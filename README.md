@@ -1,65 +1,99 @@
-# Инструкции по локальному запуску проекта LENTA BACKEND
+# __Проект «Хакатон Лента»__
 
-## 1. Клонирование репозитория
-Склонируйте репозиторий на ваш локальный компьютер:
+## __Описание__:
+Предсказательная модель и ее интерфейс по прогнозированию спроса 
+на товары заказчика собственного производства ООО “Лента”. 
 
-`git clone git@github.com:InsomniaTSO/lenta_backend.git`
+## __Авторы backend части__:
+Татьяна Манакова.
+Валентина Кириленко.
+
+## __Технологии backend части__:
+
+* [Python](https://www.python.org/)
+* [Django](https://www.djangoproject.com/)
+* [Django REST framework](https://www.django-rest-framework.org/)
+* [PostgreSQL](https://www.postgresql.org/)
+* [Docker](https://www.docker.com/)
+* [Gunicorn](https://gunicorn.org/)
+* [Nginx](https://nginx.org/)
+
+## __Подготовка и запуск проекта__:
+
+* Клонируйте репозиторий:
+
+```
+git clone git@github.com:InsomniaTSO/lenta_backend.git
+```
+
+* На сервере установите Docker и docker-compose:
+
+```
+sudo apt-get update
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+```
+
+* Скопируйте docker-compose.yml и default.conf на сервер и заполните .env по шаблону
+
+* На сервере соберите запустите контейнеры:
+
+из папки backend:
+```
+docker build -t lenta_backend .
+docker tag lenta_backend:latest lenta_backend:staging
+
+```
+
+из папки ds:
+```
+docker build -t ml .
+docker tag ml:latest ml:staging
+
+```
+
+из папки frontend:
+```
+docker build -t frontend .
+docker tag frontend:latest frontend:staging
+
+```
+
+из папки infra:
+```
+docker-compose up
+
+```
+
+Миграции и база данных с тестовыми данными запустится автоматически.
 
 
-## 2. Переход в директорию проекта
+### __Шаблон наполнения env-файла__:
 
-`cd lenta_backend`
-`cd backend`
+```
+DB_ENGINE=django.db.backends.postgresql # указываем, что работаем с postgresql
+DB_NAME=postgres # имя базы данных
+POSTGRES_USER=postgres # логин для подключения к базе данных
+POSTGRES_PASSWORD=xxxxxx # пароль для подключения к БД (установите свой)
+DB_HOST=db # название сервиса (контейнера)
+DB_PORT=5432 # порт для подключения к БД
+SECRET_KEY=xxxxxxxxxxxxxxxxxxxxxx # секретный ключ из settings.py
+DS_USER=123@123.com # логин для подключения к ml модели к бекэнду
+DS_PASSWORD=xxxxxx # пароль для подключения к ml модели к бекэнду
+```
 
+## Стуктура проекта:
 
-## 3. Установка зависимостей
-
-`pip install -r requirements.txt`
-
-
-## 4. Применение миграций и загрузка тестовых данных. 
-
-`python manage.py makemigrations categories`
-
-`python manage.py makemigrations forecast`
-
-`python manage.py makemigrations shops`
-
-`python manage.py makemigrations users`
-
-`python manage.py migrate`
-
-`python manage.py load_shops`
-
-`python manage.py load_cat`
-
-`python manage.py load_sales`
-
-`python manage.py load_forecast`
-
-
-## 5. Создание суперпользователя
-
-`python manage.py createsuperuser`
-
-
-## 6. Запуск сервера
-
-`python manage.py runserver`
-
-
-## Ссылки
-
-- Административная панель: [http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admin/)
+- Административная панель: [http://localhost/admin/](http://localhost/admin/)
 - API Endpoints:
-  - Пользователи: [http://127.0.0.1:8000/api/v1/users/](http://127.0.0.1:8000/api/v1/users/)
-  - Категории продуктов: [http://127.0.0.1:8000/api/v1/categories/](http://127.0.0.1:8000/api/v1/categories/)
-  - Продажи: [http://127.0.0.1:8000/api/v1/sales/](http://127.0.0.1:8000/api/v1/sales/)
-  - Магазины: [http://127.0.0.1:8000/api/v1/shops/](http://127.0.0.1:8000/api/v1/shops/)
-  - Прогнозы: [http://127.0.0.1:8000/api/v1/forecast/](http://127.0.0.1:8000/api/v1/forecast/)
+  - Пользователи: [http://localhost/api/v1/users/](http://localhost/api/v1/users/)
+  - Категории продуктов: [http://localhost/api/v1/categories/](http://localhost/api/v1/categories/)
+  - Продажи: [http://localhost/api/v1/sales/](http://localhost/api/v1/sales/)
+  - Магазины: [http://localhost/api/v1/shops/](http://localhost/api/v1/shops/)
+  - Прогнозы: [http://localhost/api/v1/forecast/](http://localhost/api/v1/forecast/)
+  - Скачать прогноз: [http://localhost/api/v1/forecast/](http://localhost/api/v1/forecast/)
 - Аутентификация:
-  - Вход: [http://127.0.0.1:8000/api/auth/token/login/](http://127.0.0.1:8000/api/auth/token/login/)
-  - Выход: [http://127.0.0.1:8000/api/auth/token/logout/](http://127.0.0.1:8000/api/auth/token/logout/)
+  - Вход: [http://localhost/api/auth/token/login/](http://localhost/api/auth/token/login/)
+  - Выход: [http://localhost/api/auth/token/logout/](http://localhost/api/auth/token/logout/)
 - Документация:
-  - Swagger UI: [http://127.0.0.1:8000/swagger/](http://127.0.0.1:8000/swagger/)
-  - Redoc: [http://127.0.0.1:8000/redoc/](http://127.0.0.1:8000/redoc/)
+  - Swagger UI: [http://localhost/swagger/](http://localhost/swagger/)
+  - Redoc: [http://localhost/redoc/](http://localhost/redoc/)

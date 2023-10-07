@@ -1,4 +1,5 @@
 from datetime import datetime
+from django.db.models import Q
 
 from django.http import HttpResponse
 from rest_framework import status, viewsets
@@ -9,11 +10,13 @@ from rest_framework.response import Response
 
 from lenta_backend.constants import ONLY_LIST_MSG
 
-from .filters import ForecastFilter
-from .get_xls import get_xls
-from .models import Forecast
-from .serializers import ForecastGetSerializer, ForecastPostSerializer
-
+from forecast.v1.filters import ForecastFilter
+from forecast.v1.get_xls import get_xls
+from forecast.v1.models import Forecast
+from forecast.v1.serializers import ForecastGetSerializer, ForecastPostSerializer, ForecastSerializer
+from sales.v1.serializers import SalesGroupSerializer
+from sales.v1.views import SalesViewSet
+from sales.v1.models import Sales
 
 class ForecastViewSet(viewsets.ModelViewSet): 
     """Представление для работы с моделью прогноза.""" 
@@ -39,12 +42,14 @@ class ForecastViewSet(viewsets.ModelViewSet):
         """
         if self.action == 'create':
             return ForecastPostSerializer
+        elif self.action == 'comparison':
+            return ForecastSerializer
         return self.serializer_class
 
     def list(self, request):
         """Метод для получения списка прогнозов."""
         store_ids = self.request.query_params.getlist('store')
-        sku_ids = self.request.query_params.getlist('product')
+        sku_ids = self.request.query_params.getlist('sku')
         if not store_ids or not sku_ids:
             return Response(
                 {'error': 'Не найдены данные с указанными параметрами'},
@@ -79,3 +84,34 @@ class ForecastViewSet(viewsets.ModelViewSet):
         )
         response['Content-Disposition'] = f'attachment; filename={filename}'
         return response
+    
+    @action(detail=False, methods=['get'])
+    def comparison(self, request):
+        """
+        Возвращает сводные данные по продажам и предсказаниям.
+        """
+        store_ids = self.request.query_params.getlist('store')
+        sku_ids = self.request.query_params.getlist('sku')
+        queryset_sales = Sales.objects.all()
+        if not store_ids or not sku_ids:
+            return Response({'data': []}, status=status.HTTP_404_NOT_FOUND)
+        queryset_forecast = self.filter_queryset(self.get_queryset())
+        query = Q()
+        for store_id in store_ids:
+            for sku_id in  sku_ids:
+                query |= Q(shop=store_id, product=sku_id)
+        queryset_sales =  queryset_sales.filter(query)
+        serializer_forecast = self.get_serializer(queryset_forecast, many=True).data
+        serializer_sales = SalesGroupSerializer(queryset_sales, many=True).data[0]
+        result_list = []
+        result = {}
+        for sale in serializer_sales:
+            for forecast in serializer_sales:
+                if (sale["store"] == forecast["store"] and
+                    sale["sku"] == forecast["sku"]):
+                        result["store"] = sale["store"]
+                        result["sku"] = sale["sku"]
+
+                        
+        return Response({'data': serializer_sales.data[0]}, status=status.HTTP_200_OK)
+

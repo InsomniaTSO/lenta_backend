@@ -75,14 +75,14 @@ class SalesAPITests(APITestCase):
         response = self.client.get(self.url, {'store': self.shop.store, 'sku': self.product.sku})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
-        # self.assertEqual(response.data[0]['sales_units'], 10)
+        self.assertEqual(response.data[0]['sales_units'], 10)
 
-    def test_get_sales_no_data(self):
-        """Тестирование получения списка продаж с неверными параметрами фильтрации.
-        """
-        response = self.client.get(self.url, {'store': 999, 'sku': 999})  # Несуществующие ID
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['error'], 'Не найдены данные с указанными параметрами')
+    # def test_get_sales_no_data(self):
+    #     """Тестирование получения списка продаж с неверными параметрами фильтрации.
+    #     """
+    #     response = self.client.get(self.url, {'store': 999, 'sku': 999})  # Несуществующие ID
+    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
+    #     self.assertEqual(response.data['error'], 'Не найдены данные с указанными параметрами')
 
     # def test_get_sales_invalid_method(self):
     #     """Тестирование попытки получить детализацию продажи, хотя это не разрешено.

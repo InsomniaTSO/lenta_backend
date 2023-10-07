@@ -1,8 +1,10 @@
 from django.urls import reverse
 from rest_framework import status
-from rest_framework.test import APITestCase, APIClient
-from .models import Group, Category, Subcategory, Product
+from rest_framework.test import APIClient, APITestCase
+
+from .models import Category, Group, Product, Subcategory
 from .serializers import ProductSerializer
+
 
 class ProductAPITests(APITestCase):
     """Тестирование данных товарной иерархии.

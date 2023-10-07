@@ -1,8 +1,10 @@
-from pathlib import Path
 import csv
-from django.core.management import BaseCommand
-from categories.v1.models import Group, Category, Subcategory, Product
 import logging
+from pathlib import Path
+
+from django.core.management import BaseCommand
+
+from categories.v1.models import Category, Group, Product, Subcategory
 
 logging.basicConfig(level=logging.INFO)
 

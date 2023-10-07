@@ -1,10 +1,12 @@
-from pathlib import Path
 import csv
+import logging
+from pathlib import Path
+
 from django.core.management import BaseCommand
-from shops.v1.models import Shop
+
 from categories.v1.models import Product
 from sales.v1.models import Sales
-import logging
+from shops.v1.models import Shop
 
 logging.basicConfig(level=logging.INFO)
 

@@ -1,10 +1,11 @@
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
-from .models import Shop
+
+from categories.v1.models import Category, Group, Product, Subcategory
 from shops.v1.models import City, Division, Format, Location, Size
-from categories.v1.models import Group, Category, Subcategory, Product
-from .models import Sales
+
+from .models import Sales, Shop
 
 
 class SalesAPITests(APITestCase):
@@ -43,31 +44,33 @@ class SalesAPITests(APITestCase):
         )
         self.url = reverse('sales-list')
 
-    # def test_get_sales(self):
-    #     """Тестирование получения списка продаж.
-    #     """
-    #     response = self.client.get(self.url)
-    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
-    #     self.assertEqual(len(response.data), 1)
-    # #     self.assertEqual(response.data[0]['sales_units'], 10)
+    def test_get_sales(self):
+        """Тестирование получения списка продаж без фильтров.
+        """
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    # def test_post_sales(self):
-    #     """Тестирование создания продажи через метод POST.
-    #     """
-    #     data = {
-    #         "shop": self.shop.id,
-    #         "product": self.product.id,
-    #         "date": "2023-10-06",
-    #         "sales_type": 1, 
-    #         "sales_units": 15,
-    #         "sales_units_promo": 7,
-    #         "sales_rub": 1500.00,
-    #         "sales_run_promo": 700.00
-    #     }
-    #     response = self.client.post(self.url, data, format='json')
-    #     self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-    #     self.assertEqual(Sales.objects.count(), 2)
-    #     self.assertEqual(Sales.objects.latest('id').sales_units, 15)
+    def test_post_sales(self):
+        """Тестирование создания продажи через метод POST.
+        """
+        data = {
+            'data': {
+                "store": self.shop.store, 
+                "sku": self.product.sku, 
+                "fact": [{
+                "date": "2023-10-06", 
+                "sales_type": 1,  
+                "sales_units": 15, 
+                "sales_units_promo": 7, 
+                "sales_rub": 1500.00, 
+                "sales_run_promo": 700.00 
+                }]
+            }
+        }
+        response = self.client.post(self.url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Sales.objects.count(), 2)
+        self.assertEqual(Sales.objects.latest('id').sales_units, 15)
 
     def test_get_sales_with_filters(self):
         """Тестирование получения списка продаж с применением фильтров.
@@ -75,17 +78,17 @@ class SalesAPITests(APITestCase):
         response = self.client.get(self.url, {'store': self.shop.store, 'sku': self.product.sku})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]['sales_units'], 10)
+        self.assertEqual(response.data['data'][0]['fact'][0]['sales_units'], 10)
 
-    # def test_get_sales_no_data(self):
-    #     """Тестирование получения списка продаж с неверными параметрами фильтрации.
-    #     """
-    #     response = self.client.get(self.url, {'store': 999, 'sku': 999})  # Несуществующие ID
-    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
-    #     self.assertEqual(response.data['error'], 'Не найдены данные с указанными параметрами')
+    def test_get_sales_no_data(self):
+        """Тестирование получения списка продаж с неверными параметрами фильтрации.
+        """
+        response = self.client.get(self.url, {'store': 999, 'sku': 999})
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data['error'], 'Не найдены данные с указанными параметрами')
 
-    # def test_get_sales_invalid_method(self):
-    #     """Тестирование попытки получить детализацию продажи, хотя это не разрешено.
-    #     """
-    #     response = self.client.get(self.url + str(self.sales.id) + '/')
-    #     self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+    def test_get_sales_invalid_method(self):
+        """Тестирование попытки получить детализацию продажи, хотя это не разрешено.
+        """
+        response = self.client.get(self.url + str(self.sales.id) + '/')
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)

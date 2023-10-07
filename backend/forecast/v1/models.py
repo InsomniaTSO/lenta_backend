@@ -1,7 +1,8 @@
 from django.db import models
-from shops.v1.models import Shop
-from categories.v1.models import Product
 from django.db.models import JSONField
+
+from categories.v1.models import Product
+from shops.v1.models import Shop
 
 
 class Forecast(models.Model):  

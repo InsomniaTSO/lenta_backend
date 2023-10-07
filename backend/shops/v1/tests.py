@@ -1,8 +1,10 @@
 from django.urls import reverse
 from rest_framework import status
-from rest_framework.test import APITestCase, APIClient
-from .models import City, Division, Format, Location, Size, Shop
+from rest_framework.test import APIClient, APITestCase
+
+from .models import City, Division, Format, Location, Shop, Size
 from .serializers import ShopsSerializer
+
 
 class ShopAPITests(APITestCase): 
     """Тестирование данных магазина.""" 

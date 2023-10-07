@@ -1,13 +1,14 @@
 from django.db.models import Q
-from rest_framework import viewsets, status
-from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
-from rest_framework.exceptions import MethodNotAllowed
+from rest_framework import status, viewsets
 from rest_framework.decorators import action
+from rest_framework.exceptions import MethodNotAllowed
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+
+from api.pagination import LimitPageNumberPagination
 from lenta_backend.constants import ONLY_LIST_MSG
 from sales.v1.models import Sales
-from sales.v1.serializers import SalesGroupSerializer, SalesFactSerializer
-from api.pagination import LimitPageNumberPagination
+from sales.v1.serializers import SalesFactSerializer, SalesGroupSerializer
 
 
 class SalesViewSet(viewsets.ModelViewSet):
@@ -19,11 +20,11 @@ class SalesViewSet(viewsets.ModelViewSet):
     http_method_names = ['get', 'post']
     pagination_class = LimitPageNumberPagination
 
-    def retrieve(self, request):
+    def retrieve(self, request, pk=None):
         raise MethodNotAllowed('GET', detail=ONLY_LIST_MSG)
     
     def get_serializer(self, *args, **kwargs):
-        """Задает значение many=true если передан список.
+        """Задает значение many=true, если передан список.
         """
         if isinstance(kwargs.get('data', {}), list):
             kwargs['many'] = True

@@ -1,7 +1,8 @@
 from django.db import models
-from shops.v1.models import Shop
+
 from categories.v1.models import Product
 from lenta_backend.constants import DECIMAL_PLACES, FLAG_CHOICES, MAX_DIGITS
+from shops.v1.models import Shop
 
 
 class Sales(models.Model):

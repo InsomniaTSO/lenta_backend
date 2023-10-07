@@ -1,8 +1,12 @@
-from rest_framework import serializers
 from datetime import timedelta
-from .models import Forecast
+
+from rest_framework import serializers
+
 from categories.v1.models import Product
 from shops.v1.models import Shop
+
+from .models import Forecast
+
 
 class ForecastPostSerializer(serializers.ModelSerializer):
     """Сериализатор для отправки данных прогноза. 

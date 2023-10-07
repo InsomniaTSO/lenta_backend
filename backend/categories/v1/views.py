@@ -1,9 +1,11 @@
 from rest_framework import viewsets
+from rest_framework.response import Response
+
+from api.pagination import LimitPageNumberPagination
+from categories.v1.filters import ProductFilter
 from categories.v1.models import Product
 from categories.v1.serializers import ProductSerializer
-from categories.v1.filters import ProductFilter
-from api.pagination import LimitPageNumberPagination
-from rest_framework.response import Response
+
 
 class ProductViewSet(viewsets.ReadOnlyModelViewSet):
     """Представление модели товарной иерархии."""

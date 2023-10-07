@@ -5,7 +5,7 @@ class ForecastFilter(django_filters.FilterSet):
     """Фильтр для прогнозов. Позволяет фильтровать прогнозы по дате прогноза,
     магазину, продукту и по связанным с ними полям.
     """
-    store = django_filters.AllValuesMultipleFilter(field_name='store__store')
+    store = django_filters.AllValuesMultipleFilter(field_name='store__store', )
     product = django_filters.AllValuesMultipleFilter(field_name='product__sku')
     forecast_date = django_filters.DateFilter(field_name='forecast_date')
     city = django_filters.AllValuesMultipleFilter(field_name='store__city__city_id')

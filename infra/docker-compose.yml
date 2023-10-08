@@ -18,10 +18,10 @@ services:
       python manage.py makemigrations users&&
       python manage.py migrate &&
       python manage.py collectstatic --no-input &&
-      python manage.py createsuperuser &&
       python manage.py load_shops &&
       python manage.py load_cat &&
       python manage.py load_sales &&
+      python manage.py load_forecast &&
       gunicorn --bind 0:8000 lenta_backend.wsgi"
     volumes:
       - static_value:/app/static/
@@ -42,11 +42,11 @@ services:
       - "80:80"
     volumes:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
-      # - ../frontend/build:/usr/share/nginx/html/
+      - ../frontend/build:/usr/share/nginx/html/
+      - ../docs/redoc.html:/usr/share/nginx/html/api/docs/redoc.html
+      - ../docs/openapi-schema.yml:/usr/share/nginx/html/api/docs/openapi-schema.yml
       - static_value:/var/html/static/
       - media_value:/var/html/media/
-      - .static/redoc.yaml:/var/html/redoc/redoc.yaml
-      - ./templates/redoc.html:/var/html/redoc/redoc.html
     depends_on:
        - backend
   
@@ -56,10 +56,6 @@ services:
     restart: always
     depends_on:
       - nginx
-    command: > 
-      bash -c "python3 app.py&&
-      tail -f /dev/null"
-    
     
 
 volumes:

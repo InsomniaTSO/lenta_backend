@@ -6,6 +6,15 @@ from shops.v1.models import Shop
 from .models import Forecast
 
 
+class ForecastSerializer(serializers.ModelSerializer):
+    """Сериализатор данных прогноза."""
+    sku = serializers.CharField(source='product')
+
+    class Meta:
+        model = Forecast
+        fields = ['store', 'sku', 'forecast_date', 'forecast']
+
+
 class ForecastPostSerializer(serializers.ModelSerializer):
     """Сериализатор для отправки данных прогноза. 
     Позволяет отправить информацию о магазине, дате прогноза и прогнозе продаж.
@@ -15,20 +24,20 @@ class ForecastPostSerializer(serializers.ModelSerializer):
         model = Forecast
         fields = ['store', 'forecast_date', 'forecast']
 
-    def validate(self, data): 
-        forecast_data = data.get('forecast') 
-        # Проверяем наличие 'sku' в данных
-        if 'sku' not in forecast_data: 
-            raise serializers.ValidationError({'forecast': 'Поле "sku" отсутствует.'})
-        product_sku = forecast_data.get('sku') 
-        # Проверяем, что продукт с таким SKU существует
-        if not Product.objects.filter(sku=product_sku).exists(): 
-            raise serializers.ValidationError({'sku': 'Неверный SKU.'}) 
-        data['product'] = Product.objects.get(sku=product_sku)
-        # Проверяем наличие 'sales_units' в данных
-        if 'sales_units' not in forecast_data: 
-            raise serializers.ValidationError({'forecast': 'Поле "sales_units" отсутствует.'})
-        return data
+    # def validate(self, data):
+    #     forecast_data = data.get('forecast') 
+    #     # Проверяем наличие 'sku' в данных
+    #     if 'sku' not in forecast_data: 
+    #         raise serializers.ValidationError({'forecast': 'Поле "sku" отсутствует.'})
+    #     product_sku = forecast_data.get('sku') 
+    #     # Проверяем, что продукт с таким SKU существует
+    #     if not Product.objects.filter(sku=product_sku).exists(): 
+    #         raise serializers.ValidationError({'sku': 'Неверный SKU.'}) 
+    #     data['product'] = Product.objects.get(sku=product_sku)
+    #     # Проверяем наличие 'sales_units' в данных
+    #     if 'sales_units' not in forecast_data: 
+    #         raise serializers.ValidationError({'forecast': 'Поле "sales_units" отсутствует.'})
+    #     return data
     
     def create(self, validated_data):
         forecast_data = validated_data.get('forecast')

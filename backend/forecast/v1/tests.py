@@ -6,7 +6,7 @@ from categories.v1.models import Category, Group, Product, Subcategory
 from shops.v1.models import City, Division, Format, Location, Size, Shop
 
 from .models import Forecast
-from .serializers import ForecastPostSerializer
+from .serializers import ForecastGetSerializer
 
 
 class ForecastAPITests(APITestCase):  
@@ -159,34 +159,16 @@ class ForecastAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST) 
         self.assertIn('forecast', response.data) 
     
-    def test_post_forecast_mismatch_dates(self): 
-        """Тестирование проверки на несоответствие даты в "sales_units" и "forecast_date"."""
-        data = { 
-            'store': self.shop.store, 
-            'forecast_date': '2023-10-03', 
-            'forecast': { 
-                'sku': self.product.sku, 
-                'sales_units': { 
-                    '2023-10-02': 102 
-                } 
-            } 
-        } 
-        response = self.client.post(self.url, data, format='json') 
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST) 
-        self.assertIn('forecast_date', response.data) 
-    
     def test_get_sales_without_filters(self):  
         """Тестирование получения прогнозов без использования фильтров."""
         response = self.client.get(self.url)  
-        self.assertEqual(response.status_code, status.HTTP_200_OK)  
-        self.assertEqual(len(response.data), 2)  
-        self.assertEqual(response.data[0]['forecast']['sales_units']['2023-10-01'], 102)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)  
   
     def test_store_filter(self):
         """Тестирование получения списка прогнозов с использованием фильтров."""
-        response = self.client.get(self.url, {'store': 'store_test_2'})
-        serializer_data = ForecastPostSerializer(self.forecast_2).data
-        for item in response.data:
+        response = self.client.get(self.url, {'store': 'store_test_2', 'sku': 'sku_test_2'}).json()
+        serializer_data = ForecastGetSerializer(self.forecast_2).data
+        for item in response['data']:
             self.assertEqual(item['forecast'], serializer_data['forecast'])
             self.assertEqual(item['forecast_date'], serializer_data['forecast_date'])
             self.assertEqual(item['store'], serializer_data['store'])

@@ -54,6 +54,8 @@ services:
     tty: true
     image: ml:staging
     restart: always
+    env_file:
+      - ./.env
     depends_on:
       - nginx
     

@@ -7,6 +7,7 @@ from rest_framework.decorators import action
 from rest_framework.exceptions import MethodNotAllowed
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
+from datetime import datetime, timedelta
 
 from lenta_backend.constants import ONLY_LIST_MSG
 
@@ -15,6 +16,7 @@ from forecast.v1.get_xls import get_xls
 from forecast.v1.models import Forecast
 from forecast.v1.serializers import ForecastGetSerializer, ForecastPostSerializer, ForecastSerializer
 from sales.v1.models import Sales
+
 
 
 class ForecastViewSet(viewsets.ModelViewSet):
@@ -114,49 +116,38 @@ class ForecastViewSet(viewsets.ModelViewSet):
          
     #     return Response({'data': serializer_sales.data[0]}, status=status.HTTP_200_OK)
 
-    @action(detail=False, methods=['get'])
-    def comparison(self, request):
-        """Возвращает сводные данные по продажам и предсказаниям.
-        Необходимо передать id магазина и id продукта."""
-        store_ids = self.request.query_params.getlist('store')
-        sku_ids = self.request.query_params.getlist('sku')
-        if not store_ids or not sku_ids:
-            return Response({'data': []}, status=status.HTTP_404_NOT_FOUND)
+    @action(detail=False, methods=['get']) 
+    def comparison(self, request): 
+        store_ids = self.request.query_params.getlist('store') 
+        sku_ids = self.request.query_params.getlist('sku') 
+        if not store_ids or not sku_ids: 
+            return Response({'data': []}, status=status.HTTP_404_NOT_FOUND) 
+        end_date = datetime.now().date()
+        start_date = end_date - timedelta(days=14)
+        sales = Sales.objects.filter(shop__in=store_ids, product__in=sku_ids, date__gte=start_date) 
+        forecasts = Forecast.objects.filter(store__in=store_ids, product__in=sku_ids, forecast_date=start_date)
+        result_list = [] 
+        for store_id in store_ids: 
+            for sku_id in sku_ids: 
+                sales_for_combo = sales.filter(shop=store_id, product=sku_id) 
 
-        sales = Sales.objects.filter(shop__in=store_ids, product__in=sku_ids)
-        forecasts = Forecast.objects.filter(
-            store__in=store_ids, product__in=sku_ids
-        )
-
-        result_list = []
-
-        for store_id in store_ids:
-            for sku_id in sku_ids:
-                sales_for_combo = sales.filter(shop=store_id, product=sku_id)
-                forecast_for_combo = forecasts.filter(
-                    store=store_id, product=sku_id
-                )
-
-                sales_map = {
-                    sale.date: sale.sales_units for sale in sales_for_combo
+                sales_map = { 
+                    sale.date: sale.sales_units for sale in sales_for_combo 
                 }
-
-                comparison_entries = []
-
-                for forecast in forecast_for_combo:
-                    for date_str, forecast_value in forecast.forecast['sales_units'].items():
-                        date = datetime.strptime(date_str, '%Y-%m-%d').date()
-                        sales_units = sales_map.get(date, 0)
-                        comparison_entries.append({
-                            'date': date_str,
-                            'forecast': forecast_value,
-                            'sales_units': sales_units
+                forecast_for_combo = forecasts.filter(store=store_id, product=sku_id).first() 
+                if forecast_for_combo:
+                    comparison_entries = [] 
+                    for date_str, forecast_value in forecast_for_combo.forecast['sales_units'].items(): 
+                        date = datetime.strptime(date_str, '%Y-%m-%d').date() 
+                        sales_units = sales_map.get(date, 0) 
+                        comparison_entries.append({ 
+                            'date': date_str, 
+                            'forecast': forecast_value, 
+                            'sales_units': sales_units 
                         })
-
-                result_list.append({
-                    'store': store_id,
-                    'sku': sku_id,
-                    'comparison': comparison_entries
-                })
-
+                    result_list.append({ 
+                        'store': store_id, 
+                        'sku': sku_id, 
+                        'comparison': comparison_entries 
+                    })
         return Response({'data': result_list}, status=status.HTTP_200_OK)

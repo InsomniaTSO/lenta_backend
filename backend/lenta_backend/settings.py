@@ -137,10 +137,12 @@ CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8000",
     "http://127.0.0.1:8000",
+    "http://95.181.151.181"
 ]
 
 CORS_ALLOWED_ORIGIN_REGEXES = [
     'http://localhost:8000',
+    "http://95.181.151.181"
 ]
 
 LANGUAGE_CODE = 'ru'

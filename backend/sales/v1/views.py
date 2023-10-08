@@ -9,6 +9,7 @@ from api.pagination import LimitPageNumberPagination
 from lenta_backend.constants import ONLY_LIST_MSG
 from sales.v1.models import Sales
 from sales.v1.serializers import SalesFactSerializer, SalesGroupSerializer
+from sales.v1.filters import SalesFilter
 
 
 class SalesViewSet(viewsets.ModelViewSet):
@@ -19,6 +20,7 @@ class SalesViewSet(viewsets.ModelViewSet):
     permission_classes = (AllowAny,)
     http_method_names = ['get', 'post']
     pagination_class = LimitPageNumberPagination
+    filterset_class = SalesFilter
 
     def retrieve(self, request, pk=None):
         raise MethodNotAllowed('GET', detail=ONLY_LIST_MSG)
@@ -48,31 +50,18 @@ class SalesViewSet(viewsets.ModelViewSet):
             context['date_start'] = date_start
             context['date_end'] = date_end
         return context
-
-    def get_queryset(self):
-        """Получает экземпляр объекта Sales c фильтрам по
-           магазину и товару.
-        """
-        queryset = Sales.objects.all()
+    
+    def list(self, request, *args, **kwargs):
         store_ids = self.request.query_params.getlist('store')
         sku_ids = self.request.query_params.getlist('sku')
         if not store_ids or not sku_ids:
-            return Sales.objects.none()
-        query = Q()
-        for store_id in store_ids:
-            for sku_id in sku_ids:
-                query |= Q(shop=store_id, product=sku_id)
-        queryset = queryset.filter(query)
-        return queryset
 
-    def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        data_list = []
-        if not queryset:
             return Response(
                 {'error': 'Не найдены данные с указанными параметрами'},
                 status=status.HTTP_404_NOT_FOUND
             )
+        queryset = self.filter_queryset(self.get_queryset())
+        data_list = []
         for obj in queryset:
             serializer = self.get_serializer(obj)
             if serializer.data not in data_list:

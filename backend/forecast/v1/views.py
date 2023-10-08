@@ -16,6 +16,7 @@ from forecast.v1.get_xls import get_xls
 from forecast.v1.models import Forecast
 from forecast.v1.serializers import ForecastGetSerializer, ForecastPostSerializer, ForecastSerializer
 from sales.v1.models import Sales
+from shops.v1.models import Shop
 
 
 
@@ -49,27 +50,29 @@ class ForecastViewSet(viewsets.ModelViewSet):
 
     def list(self, request):
         """Метод для получения списка прогнозов."""
-    #     store_ids = self.request.query_params.getlist('store')
-    #     sku_ids = self.request.query_params.getlist('sku')
-    #     if not store_ids or not sku_ids:
-    #         return Response(
-    #             {'error': 'Не найдены данные с указанными параметрами'},
-    #             status=status.HTTP_404_NOT_FOUND
-    #         )
+        store_ids = self.request.query_params.getlist('store')
+        sku_ids = self.request.query_params.getlist('sku')
+        if not store_ids or not sku_ids:
+            return Response(
+                {'error': 'Не найдены данные с указанными параметрами'},
+                status=status.HTTP_404_NOT_FOUND
+            )
         queryset = self.filter_queryset(self.get_queryset())
-        serializer = self.get_serializer(queryset, many=True)
-        return Response({'data': serializer.data})
-
+        data_list = []
+        for obj in queryset:
+            serializer = self.get_serializer(obj) 
+            if serializer.data not in data_list:
+                data_list.append(serializer.data)
+        return Response({'data': data_list})
+    
     def create(self, request, *args, **kwargs):
         """Метод для создания прогноза и возврата данных в нужном формате.
         """
-        serializer = self.get_serializer(data=request.data)
+        serializer = self.get_serializer(data=request.data['data'])
         serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
+        serializer.create(validated_data=request.data['data'])
         headers = self.get_success_headers(serializer.data)
-        return Response(
-            {'data': serializer.data}, status=status.HTTP_201_CREATED, headers=headers
-        )
+        return Response(request.data['data'], status=status.HTTP_201_CREATED, headers=headers)
 
     @action(detail=False, methods=['get'])
     def download_file(self, request):
@@ -86,101 +89,24 @@ class ForecastViewSet(viewsets.ModelViewSet):
             forecast, content_type='application/vnd.ms-excel'
         )
         response['Content-Disposition'] = f'attachment; filename={filename}'
+        return response
+    
+    @action(detail=False, methods=['get'])
+    def forecast_quality(self, request):
+        """
+        Возвращает сводные данные по продажам и предсказаниям.
+        """
+        store_ids = self.request.query_params.getlist('store')
+        sku_ids = self.request.query_params.getlist('sku')
+        date = self.request.query_params.get('date')
+        group = self.request.query_params.get('group')
+        
+        # for store in store_ids:
+        #     for sku in sku_ids:
+        #         forecasts = Forecast.objects.filter(store=store, product=sku)
+        #         sales = Sales.objects.filter(store=store, product=sku, date__range=["2011-01-01", "2011-01-31"])
 
-    # @action(detail=False, methods=['get'])
-    # def comparison(self, request):
-    #     """
-    #     Возвращает сводные данные по продажам и предсказаниям.
-    #     """
-    #     store_ids = self.request.query_params.getlist('store')
-    #     sku_ids = self.request.query_params.getlist('sku')
-    #     queryset_sales = Sales.objects.all()
-    #     if not store_ids or not sku_ids:
-    #         return Response({'data': []}, status=status.HTTP_404_NOT_FOUND)
-    #     queryset_forecast = self.filter_queryset(self.get_queryset())
-    #     query = Q()
-    #     for store_id in store_ids:
-    #         for sku_id in  sku_ids:
-    #             query |= Q(shop=store_id, product=sku_id)
-    #     queryset_sales =  queryset_sales.filter(query)
-    #     serializer_forecast = self.get_serializer(queryset_forecast, many=True).data
-    #     serializer_sales = SalesGroupSerializer(queryset_sales, many=True).data[0]
-    #     result_list = []
-    #     result = {}
-    #     for sale in serializer_sales:
-    #         for forecast in serializer_sales:
-    #             if (sale["store"] == forecast["store"] and
-    #                 sale["sku"] == forecast["sku"]):
-    #                     result["store"] = sale["store"]
-    #                     result["sku"] = sale["sku"]
-         
-    #     return Response({'data': serializer_sales.data[0]}, status=status.HTTP_200_OK)
-    @action(detail=False, methods=['get'])    
-    def comparison(self, request):    
-        store_ids = self.request.query_params.getlist('store')    
-        sku_ids = self.request.query_params.getlist('sku')    
-    
-        if not store_ids or not sku_ids:    
-            return Response({'data': []}, status=status.HTTP_404_NOT_FOUND)    
-    
-        end_date = datetime.now().date()   
-        start_date = end_date - timedelta(days=14)  
-    
-        sales = Sales.objects.filter(shop__in=store_ids, product__in=sku_ids, date__gte=start_date)    
-        forecasts = Forecast.objects.filter(store__in=store_ids, product__in=sku_ids, forecast_date=start_date)
-    
-        result_list = []    
-    
-        for store_id in store_ids:    
-            for sku_id in sku_ids:    
-                sales_for_combo = sales.filter(shop=store_id, product=sku_id)    
-                sales_map = {   
-                    sale.date: sale.sales_units for sale in sales_for_combo    
-                }   
-    
-                forecast_for_combo = forecasts.filter(store=store_id, product=sku_id).first()    
-                if forecast_for_combo:   
-                    detailed_entries = []
-                    first_week_forecast = 0
-                    first_week_sales = 0
-                    second_week_forecast = 0
-                    second_week_sales = 0
-    
-                    for date_str, forecast_value in forecast_for_combo.forecast['sales_units'].items():    
-                        date = datetime.strptime(date_str, '%Y-%m-%d').date()    
-                        sales_units = sales_map.get(date, 0)
-                        
-                        entry = {  
-                            'date': date_str,    
-                            'forecast': forecast_value,    
-                            'sales_units': sales_units    
-                        }
-                        
-                        detailed_entries.append(entry)
-    
-                        if (date - start_date).days < 7:  
-                            first_week_forecast += forecast_value
-                            first_week_sales += sales_units
-                        else:  
-                            second_week_forecast += forecast_value
-                            second_week_sales += sales_units
-                            
-                    comparison_data = { 
-                        'first_week': [{
-                            'forecast': first_week_forecast,
-                            'sales_units': first_week_sales
-                        }],
-                        'second_week': [{
-                            'forecast': second_week_forecast,
-                            'sales_units': second_week_sales
-                        }],
-                        'details': detailed_entries
-                    }
-    
-                    result_list.append({    
-                        'store': store_id,    
-                        'sku': sku_id,    
-                        'comparison': comparison_data  
-                    })   
-    
-        return Response({'data': result_list}, status=status.HTTP_200_OK)
+        # for store in store_ids:
+        #     serializer = self.get_serializer(data=Shop.objects.get(store=store).forecasts)
+        #     serializer.is_valid(raise_exception=True)
+        # return Response(serializer.data, status=status.HTTP_200_OK)

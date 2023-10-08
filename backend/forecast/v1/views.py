@@ -13,6 +13,8 @@ from .filters import ForecastFilter
 from .get_xls import get_xls
 from .models import Forecast
 from .serializers import ForecastGetSerializer, ForecastPostSerializer
+from sales.v1.models import Sales
+from .serializers import ComparisonSerializer
 
 
 class ForecastViewSet(viewsets.ModelViewSet): 
@@ -72,3 +74,32 @@ class ForecastViewSet(viewsets.ModelViewSet):
         )
         response['Content-Disposition'] = f'attachment; filename={filename}'
         return response
+
+
+class ComparisonViewSet(viewsets.ModelViewSet):
+    queryset = Forecast.objects.all()
+    serializer_class = ComparisonSerializer
+    
+    def list(self, request, *args, **kwargs):
+        # Получение всех прогнозов и продаж
+        forecasts = self.get_queryset()
+        sales_data = Sales.objects.all()
+
+        comparison_data = []
+
+        for forecast in forecasts:
+            sales_for_forecast = sales_data.filter(shop=forecast.store, product=forecast.product)
+            comparison_data.append({
+                'store': forecast.store,
+                'product': forecast.product,
+                'comparison': [
+                    {
+                        'date': sale.date,
+                        'forecast': forecast.forecast.get(str(sale.date), 0),
+                        'sales_units': sale.sales_units
+                    }
+                    for sale in sales_for_forecast
+                ]
+            })
+        serializer = self.get_serializer(comparison_data, many=True)
+        return Response(serializer.data)

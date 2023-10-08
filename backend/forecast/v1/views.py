@@ -115,39 +115,72 @@ class ForecastViewSet(viewsets.ModelViewSet):
     #                     result["sku"] = sale["sku"]
          
     #     return Response({'data': serializer_sales.data[0]}, status=status.HTTP_200_OK)
-
-    @action(detail=False, methods=['get']) 
-    def comparison(self, request): 
-        store_ids = self.request.query_params.getlist('store') 
-        sku_ids = self.request.query_params.getlist('sku') 
-        if not store_ids or not sku_ids: 
-            return Response({'data': []}, status=status.HTTP_404_NOT_FOUND) 
-        end_date = datetime.now().date()
-        start_date = end_date - timedelta(days=14)
-        sales = Sales.objects.filter(shop__in=store_ids, product__in=sku_ids, date__gte=start_date) 
+    @action(detail=False, methods=['get'])    
+    def comparison(self, request):    
+        store_ids = self.request.query_params.getlist('store')    
+        sku_ids = self.request.query_params.getlist('sku')    
+    
+        if not store_ids or not sku_ids:    
+            return Response({'data': []}, status=status.HTTP_404_NOT_FOUND)    
+    
+        end_date = datetime.now().date()   
+        start_date = end_date - timedelta(days=14)  
+    
+        sales = Sales.objects.filter(shop__in=store_ids, product__in=sku_ids, date__gte=start_date)    
         forecasts = Forecast.objects.filter(store__in=store_ids, product__in=sku_ids, forecast_date=start_date)
-        result_list = [] 
-        for store_id in store_ids: 
-            for sku_id in sku_ids: 
-                sales_for_combo = sales.filter(shop=store_id, product=sku_id) 
-
-                sales_map = { 
-                    sale.date: sale.sales_units for sale in sales_for_combo 
-                }
-                forecast_for_combo = forecasts.filter(store=store_id, product=sku_id).first() 
-                if forecast_for_combo:
-                    comparison_entries = [] 
-                    for date_str, forecast_value in forecast_for_combo.forecast['sales_units'].items(): 
-                        date = datetime.strptime(date_str, '%Y-%m-%d').date() 
-                        sales_units = sales_map.get(date, 0) 
-                        comparison_entries.append({ 
-                            'date': date_str, 
-                            'forecast': forecast_value, 
-                            'sales_units': sales_units 
-                        })
-                    result_list.append({ 
-                        'store': store_id, 
-                        'sku': sku_id, 
-                        'comparison': comparison_entries 
-                    })
+    
+        result_list = []    
+    
+        for store_id in store_ids:    
+            for sku_id in sku_ids:    
+                sales_for_combo = sales.filter(shop=store_id, product=sku_id)    
+                sales_map = {   
+                    sale.date: sale.sales_units for sale in sales_for_combo    
+                }   
+    
+                forecast_for_combo = forecasts.filter(store=store_id, product=sku_id).first()    
+                if forecast_for_combo:   
+                    detailed_entries = []
+                    first_week_forecast = 0
+                    first_week_sales = 0
+                    second_week_forecast = 0
+                    second_week_sales = 0
+    
+                    for date_str, forecast_value in forecast_for_combo.forecast['sales_units'].items():    
+                        date = datetime.strptime(date_str, '%Y-%m-%d').date()    
+                        sales_units = sales_map.get(date, 0)
+                        
+                        entry = {  
+                            'date': date_str,    
+                            'forecast': forecast_value,    
+                            'sales_units': sales_units    
+                        }
+                        
+                        detailed_entries.append(entry)
+    
+                        if (date - start_date).days < 7:  
+                            first_week_forecast += forecast_value
+                            first_week_sales += sales_units
+                        else:  
+                            second_week_forecast += forecast_value
+                            second_week_sales += sales_units
+                            
+                    comparison_data = { 
+                        'first_week': [{
+                            'forecast': first_week_forecast,
+                            'sales_units': first_week_sales
+                        }],
+                        'second_week': [{
+                            'forecast': second_week_forecast,
+                            'sales_units': second_week_sales
+                        }],
+                        'details': detailed_entries
+                    }
+    
+                    result_list.append({    
+                        'store': store_id,    
+                        'sku': sku_id,    
+                        'comparison': comparison_data  
+                    })   
+    
         return Response({'data': result_list}, status=status.HTTP_200_OK)

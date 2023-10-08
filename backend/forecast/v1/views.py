@@ -116,6 +116,8 @@ class ForecastViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'])
     def comparison(self, request):
+        """Возвращает сводные данные по продажам и предсказаниям.
+        Необходимо передать id магазина и id продукта."""
         store_ids = self.request.query_params.getlist('store')
         sku_ids = self.request.query_params.getlist('sku')
         if not store_ids or not sku_ids:

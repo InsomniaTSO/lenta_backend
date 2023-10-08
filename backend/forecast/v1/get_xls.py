@@ -11,7 +11,7 @@ def get_xls(data):
     forecast_pd = pd.DataFrame()
     for forecast in forecasts:
         temp_forecast_pd = pd.DataFrame.from_dict(forecast)
-        forecast_pd = forecast_pd._append(temp_forecast_pd)
+        forecast_pd = pd.concat([forecast_pd, temp_forecast_pd])
     forecast_pd['forecast_to_date'] = forecast_pd.index
     forecast_pd.rename(columns={'store': 'ТК', 'group': 'Товарная группа',
                                 'category': 'Товарная категория',

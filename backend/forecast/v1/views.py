@@ -14,9 +14,8 @@ from forecast.v1.filters import ForecastFilter
 from forecast.v1.get_xls import get_xls
 from forecast.v1.models import Forecast
 from forecast.v1.serializers import ForecastGetSerializer, ForecastPostSerializer, ForecastSerializer
-from sales.v1.serializers import SalesGroupSerializer
-from sales.v1.views import SalesViewSet
 from sales.v1.models import Sales
+from shops.v1.models import Shop
 
 class ForecastViewSet(viewsets.ModelViewSet): 
     """Представление для работы с моделью прогноза.""" 
@@ -56,17 +55,22 @@ class ForecastViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_404_NOT_FOUND
             )
         queryset = self.filter_queryset(self.get_queryset())
-        serializer = self.get_serializer(queryset, many=True)
-        return Response({'data': serializer.data})
+        data_list = []
+        for obj in queryset:
+            serializer = self.get_serializer(obj) 
+            if serializer.data not in data_list:
+                data_list.append(serializer.data)
+        return Response({'data': data_list})
     
     def create(self, request, *args, **kwargs):
         """Метод для создания прогноза и возврата данных в нужном формате.
         """
-        serializer=self.get_serializer(data=request.data)
+        serializer = self.get_serializer(data=request.data['data'])
         serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
+        serializer.create(validated_data=request.data['data'])
         headers = self.get_success_headers(serializer.data)
-        return Response({'data': serializer.data}, status=status.HTTP_201_CREATED, headers=headers)
+        return Response(request.data['data'], status=status.HTTP_201_CREATED, headers=headers)
+    
 
     @action(detail=False, methods=['get'])
     def download_file(self, request):
@@ -86,32 +90,22 @@ class ForecastViewSet(viewsets.ModelViewSet):
         return response
     
     @action(detail=False, methods=['get'])
-    def comparison(self, request):
+    def forecast_quality(self, request):
         """
         Возвращает сводные данные по продажам и предсказаниям.
         """
         store_ids = self.request.query_params.getlist('store')
         sku_ids = self.request.query_params.getlist('sku')
-        queryset_sales = Sales.objects.all()
-        if not store_ids or not sku_ids:
-            return Response({'data': []}, status=status.HTTP_404_NOT_FOUND)
-        queryset_forecast = self.filter_queryset(self.get_queryset())
-        query = Q()
-        for store_id in store_ids:
-            for sku_id in  sku_ids:
-                query |= Q(shop=store_id, product=sku_id)
-        queryset_sales =  queryset_sales.filter(query)
-        serializer_forecast = self.get_serializer(queryset_forecast, many=True).data
-        serializer_sales = SalesGroupSerializer(queryset_sales, many=True).data[0]
-        result_list = []
-        result = {}
-        for sale in serializer_sales:
-            for forecast in serializer_sales:
-                if (sale["store"] == forecast["store"] and
-                    sale["sku"] == forecast["sku"]):
-                        result["store"] = sale["store"]
-                        result["sku"] = sale["sku"]
+        date = self.request.query_params.get('date')
+        group = self.request.query_params.get('group')
+        
+        # for store in store_ids:
+        #     for sku in sku_ids:
+        #         forecasts = Forecast.objects.filter(store=store, product=sku)
+        #         sales = Sales.objects.filter(store=store, product=sku, date__range=["2011-01-01", "2011-01-31"])
 
-                        
-        return Response({'data': serializer_sales.data[0]}, status=status.HTTP_200_OK)
+        # for store in store_ids:
+        #     serializer = self.get_serializer(data=Shop.objects.get(store=store).forecasts)
+        #     serializer.is_valid(raise_exception=True)
+        # return Response(serializer.data, status=status.HTTP_200_OK)
 

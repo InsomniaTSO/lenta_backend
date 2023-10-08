@@ -74,15 +74,3 @@ class ForecastGetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Forecast
         fields = ['store', 'sku', 'group', 'category', 'subcategory', 'uom', 'forecast_date', 'forecast']
-
-
-class ComparisonDataSerializer(serializers.Serializer):
-    date = serializers.DateField()
-    forecast = serializers.IntegerField()
-    sales_units = serializers.IntegerField()
-
-
-class ComparisonSerializer(serializers.Serializer):
-    store = serializers.CharField(source='store.store')
-    sku = serializers.CharField(source='product.sku')
-    comparison = ComparisonDataSerializer(many=True)

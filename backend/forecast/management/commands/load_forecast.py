@@ -17,14 +17,10 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options): 
         path_file = self._get_path_to_csv_file()
-
-        # if Forecast.objects.exists():
-        #     logging.info('Данные прогноза уже загружены')
-        #     return 
              
         logging.info('Загрузка данных прогноза') 
-        # self._load_data_from_csv(path_file[0])
-        self.load_data_from_past_csv(path_file[1])
+        self._load_data_from_csv(path_file[0])
+        #self.load_data_from_past_csv(path_file[1])
         logging.info('Загрузка завершена успешно') 
 
     def _get_path_to_csv_file(self) -> Path: 

@@ -92,7 +92,9 @@ class ForecastAPITests(APITestCase):
         self.url = reverse('forecast-list')
 
     def test_post_forecast(self):  
-        """Тестирование создания прогноза с использованием метода POST."""
+        """Тестирование создания прогноза с
+        использованием метода POST.
+        """
         data = { 
             'store': self.shop.store, 
             'forecast_date': '2023-10-02', 

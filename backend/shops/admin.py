@@ -47,6 +47,10 @@ class SizeAdmin(admin.ModelAdmin):
 @register(Shop)
 class ShopAdmin(admin.ModelAdmin):
     """Админка магазинов."""
-    list_display = ('store', 'city', 'type_format', 'loc', 'size', 'is_active')
-    search_fields = ('store', 'city', 'type_format', 'loc', 'size', 'is_active')
+    list_display = (
+        'store', 'city', 'type_format', 'loc', 'size', 'is_active'
+    )
+    search_fields = (
+        'store', 'city', 'type_format', 'loc', 'size', 'is_active'
+    )
     empty_value_display = '-пусто-'

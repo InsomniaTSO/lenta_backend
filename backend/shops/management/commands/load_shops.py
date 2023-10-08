@@ -16,11 +16,11 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         path_file = self._get_path_to_csv_file()
-        
+
         if Shop.objects.exists():
             logging.info('Данные для магазинов уже загружены')
             return
-        
+
         logging.info('Загрузка данных магазинов')
         self._load_shops_from_csv(path_file)
         logging.info('Загрузка завершена успешно')
@@ -44,7 +44,7 @@ class Command(BaseCommand):
         size = Size.objects.get_or_create(type_size_id=int(row[5]))[0]
         is_active = int(row[6])
         Shop.objects.get_or_create(
-            store=store, 
+            store=store,
             city=city,
             division=division,
             type_format=format,

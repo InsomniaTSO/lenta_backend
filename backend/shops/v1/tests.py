@@ -6,11 +6,11 @@ from .models import City, Division, Format, Location, Shop, Size
 from .serializers import ShopsSerializer
 
 
-class ShopAPITests(APITestCase): 
-    """Тестирование данных магазина.""" 
- 
-    def setUp(self): 
-        # Создание тестовых данных 
+class ShopAPITests(APITestCase):
+    """Тестирование данных магазина."""
+
+    def setUp(self):
+        # Создание тестовых данных
         self.client = APIClient()
         self.city_1 = City.objects.create(city_id='test_city_1')
         self.city_2 = City.objects.create(city_id='test_city_2')

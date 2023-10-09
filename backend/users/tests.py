@@ -14,13 +14,15 @@ class CustomUserTests(APITestCase):
     def test_get_token(self):
         # Тест получения токена
         User.objects.create_user(
-            email='testuser3@example.com',
-            password='testpassword',
-            username='testuser3'
+            username='testuser',
+            email='testuser@example.com',
+            first_name='first_name',
+            last_name='last_name',
+            password='testpass',
         )
         data = {
-            'email': 'testuser3@example.com',
-            'password': 'testpassword'
+            'email': 'testuser@example.com',
+            'password': 'testpass'
         }
         response = self.client.post(self.token_url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)

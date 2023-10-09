@@ -6,6 +6,7 @@ from forecast.v1.models import Forecast
 
 logging.basicConfig(level=logging.INFO)
 
+
 class Command(BaseCommand):
     """Удаляет все товары из базы данных."""
     help = "python manage.py delete_forecast"

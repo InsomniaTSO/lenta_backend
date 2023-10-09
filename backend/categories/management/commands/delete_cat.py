@@ -6,6 +6,7 @@ from categories.v1.models import Category, Group, Product, Subcategory
 
 logging.basicConfig(level=logging.INFO)
 
+
 class Command(BaseCommand):
     """Удаляет все товары из базы данных."""
     help = "python manage.py delete_cat"

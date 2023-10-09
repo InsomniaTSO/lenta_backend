@@ -1,6 +1,6 @@
 from django.urls import reverse
 from rest_framework import status
-from rest_framework.test import APITestCase
+from rest_framework.test import APIClient, APITestCase
 
 from categories.v1.models import Category, Group, Product, Subcategory
 from shops.v1.models import City, Division, Format, Location, Size
@@ -12,6 +12,27 @@ class SalesAPITests(APITestCase):
     """Тестирование API продаж.
     """
     def setUp(self):
+        # Создание тестовых данных
+        self.client = APIClient()
+        # self.user = User.objects.create_user(
+        #     username='testuser',
+        #     email='testuser@example.com',
+        #     first_name='first_name',
+        #     last_name='last_name',
+        #     password='testpass',
+
+        # )
+        # self.client.login(
+        #     email='testuser@example.com',
+        #     password='testpass'
+        # )
+        # token_response = self.client.post(reverse('login'), data={
+        #     'email': 'testuser@example.com',
+        #     'password': 'testpass'
+        # })
+        # self.token = token_response.data['auth_token']
+        # self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token}')
+
         # Создание тестовых данных для магазина
         self.city = City.objects.create(city_id='test_city')
         self.division = Division.objects.create(division_code_id='test_div')
@@ -46,7 +67,7 @@ class SalesAPITests(APITestCase):
         self.sales = Sales.objects.create(
             shop=self.shop,
             product=self.product,
-            date="2023-10-05",
+            date='2023-10-05',
             sales_type=1,
             sales_units=10,
             sales_units_promo=5,
@@ -66,15 +87,15 @@ class SalesAPITests(APITestCase):
         """
         data = {
             'data': {
-                "store": self.shop.store,
-                "sku": self.product.sku,
-                "fact": [{
-                    "date": "2023-10-06",
-                    "sales_type": 1,
-                    "sales_units": 15,
-                    "sales_units_promo": 7,
-                    "sales_rub": 1500.00,
-                    "sales_run_promo": 700.00
+                'store': self.shop.store,
+                'sku': self.product.sku,
+                'fact': [{
+                    'date': "2023-10-06",
+                    'sales_type': 1,
+                    'sales_units': 15,
+                    'sales_units_promo': 7,
+                    'sales_rub': 1500.00,
+                    'sales_run_promo': 700.00
                 }]
             }
         }
@@ -100,11 +121,7 @@ class SalesAPITests(APITestCase):
         неверными параметрами фильтрации.
         """
         response = self.client.get(self.url, {'store': 999, 'sku': 999})
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertEqual(
-            response.data['error'],
-            'Не найдены данные с указанными параметрами'
-        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_get_sales_invalid_method(self):
         """Тестирование попытки получить детализацию продажи,

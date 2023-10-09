@@ -1,10 +1,10 @@
 import os
 from pathlib import Path
 
-# BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-# HOME_DIR = BASE_DIR.replace('backend', '')
-BASE_DIR = Path(__file__).resolve().parent.parent
-HOME_DIR = BASE_DIR.parent if 'backend' in BASE_DIR.name else BASE_DIR
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+HOME_DIR = BASE_DIR.replace('backend', '')
+# BASE_DIR = Path(__file__).resolve().parent.parent
+# HOME_DIR = BASE_DIR.parent if 'backend' in BASE_DIR.name else BASE_DIR
 
 
 SECRET_KEY = os.getenv('SECRET_KEY', default='xxxxxxxxxx')
@@ -75,23 +75,23 @@ TEMPLATES = [
 WSGI_APPLICATION = 'lenta_backend.wsgi.application'
 
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': os.getenv('DB_ENGINE', default='django.db.backends.postgresql'),
-#         'NAME': os.getenv('DB_NAME', default=os.path.join(BASE_DIR, 'db.sqlite3')),
-#         'USER': os.getenv('POSTGRES_USER', default=None),
-#         'PASSWORD': os.getenv('POSTGRES_PASSWORD', default=None),
-#         'HOST': os.getenv('DB_HOST', default=None),
-#         'PORT': os.getenv('DB_PORT', default=None)
-#     }
-# }
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'db.sqlite3',
+        'ENGINE': os.getenv('DB_ENGINE', default='django.db.backends.postgresql'),
+        'NAME': os.getenv('DB_NAME', default=os.path.join(BASE_DIR, 'db.sqlite3')),
+        'USER': os.getenv('POSTGRES_USER', default=None),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', default=None),
+        'HOST': os.getenv('DB_HOST', default=None),
+        'PORT': os.getenv('DB_PORT', default=None)
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': 'db.sqlite3',
+#     }
+# }
 
 AUTH_PASSWORD_VALIDATORS = [
     {

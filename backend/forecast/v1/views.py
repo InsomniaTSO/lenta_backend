@@ -1,6 +1,8 @@
+import pandas as pd
+import numpy as np
+import json
 from datetime import datetime
 from django.db.models import Q
-
 from django.http import HttpResponse
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
@@ -10,16 +12,15 @@ from rest_framework.response import Response
 from datetime import datetime, timedelta
 
 from lenta_backend.constants import ONLY_LIST_MSG
-
 from forecast.v1.filters import ForecastFilter
-from forecast.v1.get_xls import get_xls
+from forecast.v1.get_xls import get_xls, get_quality_xls
 from forecast.v1.models import Forecast
 from forecast.v1.serializers import (
     ForecastGetSerializer, ForecastPostSerializer, ForecastSerializer
 )
 from sales.v1.models import Sales
-from shops.v1.models import Shop
-
+from categories.v1.models import Product
+from forecast.v1.aggregation import aggregation, aggregation_by_store
 
 class ForecastViewSet(viewsets.ModelViewSet):
     """Представление для работы с моделью прогноза."""
@@ -94,29 +95,71 @@ class ForecastViewSet(viewsets.ModelViewSet):
         )
         response['Content-Disposition'] = f'attachment; filename={filename}'
         return response
-
-    # @action(detail=False, methods=['get'])
-    # def forecast_quality(self, request):
-    #     """
-    #     Возвращает сводные данные по продажам и предсказаниям.
-    #     """
-    #     store_ids = self.request.query_params.getlist('store')
-    #     sku_ids = self.request.query_params.getlist('sku')
-    #     date = self.request.query_params.get('date')
-    #     group = self.request.query_params.get('group')
-
-        # for store in store_ids:
-        #     for sku in sku_ids:
-        #         forecasts = Forecast.objects.filter(store=store, product=sku)
-        #         sales = Sales.objects.filter(
-        #           store=store, product=sku, date__range=[
-        # "2011-01-01", "2011-01-31"
-        # ]
-        # )
-
-        # for store in store_ids:
-        #     serializer = self.get_serializer(
-        #       data=Shop.objects.get(store=store).forecasts
-        # )
-        #     serializer.is_valid(raise_exception=True)
-        # return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    @action(detail=False, methods=['get'])
+    def forecast_quality(self, request):
+        """
+        Возвращает сводные данные по продажам и предсказаниям.
+        """
+        date_range = ["2023-07-05", "2023-07-18"]
+        store_ids = self.request.query_params.getlist('store')
+        sku_ids = self.request.query_params.getlist('sku')
+        group = self.request.query_params.get('group')
+        if not store_ids or not sku_ids:
+            return Response({"data": []}, status=status.HTTP_404_NOT_FOUND)
+        query_sales = Sales.objects.filter(date__range=date_range)
+        query_forecast = Forecast.objects.filter(date__range=date_range)
+        query_f = Q()
+        for store_id in store_ids:
+            for sku_id in sku_ids:
+                query_f |= Q(store=store_id, product=sku_id)
+        query_s = Q()
+        for store_id in store_ids:
+            for sku_id in sku_ids:
+                query_s |= Q(shop=store_id, product=sku_id)
+        if not query_sales.filter(query_s) or not query_forecast.filter(query_f):
+            return Response({"data": []}, status=status.HTTP_404_NOT_FOUND)
+        pd_cat =  pd.DataFrame(Product.objects.all().values()).rename(columns={'sku': 'product_id'})
+        pd_sales = pd.DataFrame(query_sales.filter(query_s).values())
+        pd_forecast = pd.DataFrame(query_forecast.filter(query_f).values())
+        pd_all = aggregation(pd_cat, pd_sales, pd_forecast)
+        if group == "1":
+            result = aggregation_by_store(pd_all)
+            return Response({"data": json.loads(result.to_json(orient="records"))}, status=status.HTTP_200_OK)
+        else:
+            return Response({"data": json.loads(pd_all.to_json(orient="records"))}, status=status.HTTP_200_OK)
+        
+    @action(detail=False, methods=['get'])
+    def download_forecast_quality(self, request):
+        """
+        Возвращает xlsx-файл с качеством прогноза.
+        """
+        today = datetime.today().strftime('%d-%m-%Y')
+        filename = f'{today}_forecast_quality.xlsx'
+        date_range = ["2023-07-05", "2023-07-18"]
+        store_ids = self.request.query_params.getlist('store')
+        sku_ids = self.request.query_params.getlist('sku')
+        if not store_ids or not sku_ids:
+            return Response({"data": []}, status=status.HTTP_404_NOT_FOUND)
+        query_sales = Sales.objects.filter(date__range=date_range)
+        query_forecast = Forecast.objects.filter(date__range=date_range)
+        query_f = Q()
+        for store_id in store_ids:
+            for sku_id in sku_ids:
+                query_f |= Q(store=store_id, product=sku_id)
+        query_s = Q()
+        for store_id in store_ids:
+            for sku_id in sku_ids:
+                query_s |= Q(shop=store_id, product=sku_id)
+        if not query_sales.filter(query_s) or not query_forecast.filter(query_f):
+            return Response({"data": []}, status=status.HTTP_404_NOT_FOUND)
+        pd_cat =  pd.DataFrame(Product.objects.all().values()).rename(columns={'sku': 'product_id'})
+        pd_sales = pd.DataFrame(query_sales.filter(query_s).values())
+        pd_forecast = pd.DataFrame(query_forecast.filter(query_f).values())
+        pd_all = aggregation(pd_cat, pd_sales, pd_forecast)
+        forecast = get_quality_xls(pd_all).getvalue()
+        response = HttpResponse(
+            forecast, content_type='application/vnd.ms-excel'
+        )
+        response['Content-Disposition'] = f'attachment; filename={filename}'
+        return response

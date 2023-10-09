@@ -17,17 +17,19 @@ def get_xls(data):
                                 'category': 'Товарная категория',
                                 'subcategory': 'Товарная подкатегория',
                                 'sku': 'Товар', 'uom': 'Продажа на вес',
-                                'forecast_date': 'Дата прогноза', 
+                                'forecast_date': 'Дата прогноза',
                                 'forecast_to_date': 'Прогноз на дату',
                                 'forecast': 'Прогноз'}, inplace=True)
-    forecast_pd = forecast_pd.reindex(columns=['ТК', 'Товарная группа', 'Товарная категория',
-                                               'Товарная подкатегория', 'Товар',
-                                               'Продажа на вес', 'Дата прогноза',
-                                               'Прогноз на дату', 'Прогноз'])
+    forecast_pd = forecast_pd.reindex(
+        columns=['ТК', 'Товарная группа', 'Товарная категория',
+                 'Товарная подкатегория', 'Товар',
+                 'Продажа на вес', 'Дата прогноза',
+                 'Прогноз на дату', 'Прогноз']
+    )
     buffer = io.BytesIO()
-    writer = pd.ExcelWriter(buffer, engine='xlsxwriter')   
+    writer = pd.ExcelWriter(buffer, engine='xlsxwriter')
     forecast_pd.to_excel(writer, sheet_name='forecast', index=False)
-    workbook  = writer.book
+    workbook = writer.book
     worksheet = writer.sheets['forecast']
     worksheet.autofilter('A1:G1')
     worksheet.set_column(0, 4, 40)
@@ -39,7 +41,7 @@ def get_xls(data):
         'valign': 'center',
         'fg_color': '003C96',
         'font_color': 'FFB900',
-        'font_size' : 13,
+        'font_size': 13,
         'border': 1})
     forecast_format = workbook.add_format({
         'bold': True,

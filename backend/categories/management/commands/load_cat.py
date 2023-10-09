@@ -11,16 +11,16 @@ logging.basicConfig(level=logging.INFO)
 
 class Command(BaseCommand):
     """Добавляет данные из data/st_df.csv в базу данных."""
-    
+
     help = "python manage.py load_all_data"
-    
+
     def handle(self, *args, **options):
         path_file = self._get_path_to_csv_file()
-        
+
         if Product.objects.exists():
             logging.info('Данные товарной иерархии уже загружены')
             return
-        
+
         logging.info('Загрузка данных товарной иерархии')
         self._load_products_from_csv(path_file)
         logging.info('Загрузка завершена успешно')
@@ -41,11 +41,11 @@ class Command(BaseCommand):
         category = Category.objects.get_or_create(cat_id=row[2])[0]
         subcategory = Subcategory.objects.get_or_create(subcat_id=row[3])[0]
         uom = int(row[4])
-        
+
         Product.objects.get_or_create(
-            sku=sku, 
-            group=group, 
-            category=category, 
-            subcategory=subcategory, 
+            sku=sku,
+            group=group,
+            category=category,
+            subcategory=subcategory,
             uom=uom
         )

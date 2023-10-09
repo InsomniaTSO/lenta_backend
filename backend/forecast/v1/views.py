@@ -9,6 +9,7 @@ from rest_framework.decorators import action
 from rest_framework.exceptions import MethodNotAllowed
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
+from datetime import datetime, timedelta
 
 from lenta_backend.constants import ONLY_LIST_MSG
 from forecast.v1.filters import ForecastFilter
@@ -19,24 +20,25 @@ from sales.v1.models import Sales
 from categories.v1.models import Product
 from forecast.v1.aggregation import aggregation, aggregation_by_store
 
-class ForecastViewSet(viewsets.ModelViewSet): 
+
+class ForecastViewSet(viewsets.ModelViewSet):
     """Представление для работы с моделью прогноза.""" 
     queryset = Forecast.objects.all()
     serializer_class = ForecastGetSerializer
     http_method_names = ['get', 'post']
     filterset_class = ForecastFilter
 
-    def retrieve(self, request, pk=None): 
-        """Ограничение метода retrieve.""" 
+    def retrieve(self, request, pk=None):
+        """Ограничение метода retrieve."""
         raise MethodNotAllowed('GET', detail=ONLY_LIST_MSG)
-    
+
     def get_serializer(self, *args, **kwargs):
         """Задает значение many=true если передан список.
         """
         if isinstance(kwargs.get('data', {}), list):
             kwargs['many'] = True
         return super(ForecastViewSet, self).get_serializer(*args, **kwargs)
-   
+
     def get_serializer_class(self):
         """Возвращает сериализатор в зависимости от
         используемого метода.
@@ -72,7 +74,6 @@ class ForecastViewSet(viewsets.ModelViewSet):
         serializer.create(validated_data=request.data['data'])
         headers = self.get_success_headers(serializer.data)
         return Response(request.data['data'], status=status.HTTP_201_CREATED, headers=headers)
-    
 
     @action(detail=False, methods=['get'])
     def download_file(self, request):
@@ -158,4 +159,3 @@ class ForecastViewSet(viewsets.ModelViewSet):
         )
         response['Content-Disposition'] = f'attachment; filename={filename}'
         return response
-

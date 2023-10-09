@@ -16,11 +16,9 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options): 
         path_file = self._get_path_to_csv_file()
-
         if Forecast.objects.exists():
             logging.info('Данные прогноза уже загружены')
             return 
-             
         logging.info('Загрузка данных прогноза') 
         self._load_data_from_csv(path_file)
         logging.info('Загрузка завершена успешно') 
@@ -28,7 +26,6 @@ class Command(BaseCommand):
     def _get_path_to_csv_file(self) -> Path: 
         return Path(__file__).parents[3] / 'data' / 'lenta_last14_v3.csv'
                 
-
     def _load_data_from_csv(self, path_file: Path):
         with open(path_file, encoding='utf-8') as file:
             csvfilereader = csv.reader(file, delimiter=",")

@@ -11,7 +11,6 @@ from .models import Sales, Shop
 class SalesAPITests(APITestCase):
     """Тестирование API продаж.
     """
-    
     def setUp(self):
         # Создание тестовых данных для магазина
         self.city = City.objects.create(city_id='test_city')
@@ -19,17 +18,29 @@ class SalesAPITests(APITestCase):
         self.format = Format.objects.create(type_format_id=1)
         self.location = Location.objects.create(type_loc_id=1)
         self.size = Size.objects.create(type_size_id=1)
-        self.shop = Shop.objects.create(store='store_test', city=self.city, division=self.division, 
-                                        type_format=self.format, loc=self.location, 
-                                        size=self.size, is_active=1)
-        
+        self.shop = Shop.objects.create(
+            store='store_test',
+            city=self.city,
+            division=self.division,
+            type_format=self.format,
+            loc=self.location,
+            size=self.size,
+            is_active=1
+        )
+
         # Создание тестовых данных для продукта
-        self.group = Group.objects.create(group_id = 'test_group')
-        self.category = Category.objects.create(cat_id = 'test_cat')
-        self.subcategory = Subcategory.objects.create(subcat_id = 'test_subcat')
-        self.product = Product.objects.create(sku='sku_test', group=self.group, 
-                                              category=self.category, subcategory=self.subcategory, 
-                                              uom=1)
+        self.group = Group.objects.create(group_id='test_group')
+        self.category = Category.objects.create(cat_id='test_cat')
+        self.subcategory = Subcategory.objects.create(
+            subcat_id='test_subcat'
+        )
+        self.product = Product.objects.create(
+            sku='sku_test',
+            group=self.group,
+            category=self.category,
+            subcategory=self.subcategory,
+            uom=1
+        )
 
         # Создание тестовых данных для продаж
         self.sales = Sales.objects.create(
@@ -55,15 +66,15 @@ class SalesAPITests(APITestCase):
         """
         data = {
             'data': {
-                "store": self.shop.store, 
-                "sku": self.product.sku, 
+                "store": self.shop.store,
+                "sku": self.product.sku,
                 "fact": [{
-                "date": "2023-10-06", 
-                "sales_type": 1,  
-                "sales_units": 15, 
-                "sales_units_promo": 7, 
-                "sales_rub": 1500.00, 
-                "sales_run_promo": 700.00 
+                    "date": "2023-10-06",
+                    "sales_type": 1,
+                    "sales_units": 15,
+                    "sales_units_promo": 7,
+                    "sales_rub": 1500.00,
+                    "sales_run_promo": 700.00
                 }]
             }
         }
@@ -75,20 +86,31 @@ class SalesAPITests(APITestCase):
     def test_get_sales_with_filters(self):
         """Тестирование получения списка продаж с применением фильтров.
         """
-        response = self.client.get(self.url, {'store': self.shop.store, 'sku': self.product.sku})
+        response = self.client.get(
+            self.url, {'store': self.shop.store, 'sku': self.product.sku}
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data['data'][0]['fact'][0]['sales_units'], 10)
+        self.assertEqual(
+            response.data['data'][0]['fact'][0]['sales_units'], 10
+        )
 
     def test_get_sales_no_data(self):
-        """Тестирование получения списка продаж с неверными параметрами фильтрации.
+        """Тестирование получения списка продаж с
+        неверными параметрами фильтрации.
         """
         response = self.client.get(self.url, {'store': 999, 'sku': 999})
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertEqual(response.data['error'], 'Не найдены данные с указанными параметрами')
+        self.assertEqual(
+            response.data['error'],
+            'Не найдены данные с указанными параметрами'
+        )
 
     def test_get_sales_invalid_method(self):
-        """Тестирование попытки получить детализацию продажи, хотя это не разрешено.
+        """Тестирование попытки получить детализацию продажи,
+        хотя это не разрешено.
         """
         response = self.client.get(self.url + str(self.sales.id) + '/')
-        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        self.assertEqual(
+            response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED
+        )

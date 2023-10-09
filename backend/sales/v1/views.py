@@ -24,14 +24,14 @@ class SalesViewSet(viewsets.ModelViewSet):
 
     def retrieve(self, request, pk=None):
         raise MethodNotAllowed('GET', detail=ONLY_LIST_MSG)
-    
+
     def get_serializer(self, *args, **kwargs):
         """Задает значение many=true, если передан список.
         """
         if isinstance(kwargs.get('data', {}), list):
             kwargs['many'] = True
         return super(SalesViewSet, self).get_serializer(*args, **kwargs)
-    
+
     def get_serializer_class(self):
         """Возвращает сериализатор в зависимости от
         используемого метода.
@@ -39,7 +39,7 @@ class SalesViewSet(viewsets.ModelViewSet):
         if self.action == 'create':
             return SalesFactSerializer
         return self.serializer_class
-    
+
     def get_serializer_context(self):
         """Передает дополнительный контекст для поиска по дате.
         """
@@ -55,6 +55,7 @@ class SalesViewSet(viewsets.ModelViewSet):
         store_ids = self.request.query_params.getlist('store')
         sku_ids = self.request.query_params.getlist('sku')
         if not store_ids or not sku_ids:
+
             return Response(
                 {'error': 'Не найдены данные с указанными параметрами'},
                 status=status.HTTP_404_NOT_FOUND
@@ -62,7 +63,7 @@ class SalesViewSet(viewsets.ModelViewSet):
         queryset = self.filter_queryset(self.get_queryset())
         data_list = []
         for obj in queryset:
-            serializer = self.get_serializer(obj) 
+            serializer = self.get_serializer(obj)
             if serializer.data not in data_list:
                 data_list.append(serializer.data)
         return Response({"data": data_list})
@@ -72,8 +73,10 @@ class SalesViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-    
+        return Response(
+            serializer.data, status=status.HTTP_201_CREATED, headers=headers
+        )
+
     @action(detail=False, methods=['get'])
     def ml_all(self, request, *args, **kwargs):
         queryset = Sales.objects.all()

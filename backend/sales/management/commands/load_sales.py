@@ -18,11 +18,11 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         path_file = self._get_path_to_csv_file()
-        
+
         if Sales.objects.exists():
             logging.info('Данные для продаж уже загружены')
             return
-        
+
         logging.info('Загрузка данных продаж')
         self._load_data_from_csv(path_file)
         logging.info('Загрузка завершена успешно')
@@ -47,7 +47,7 @@ class Command(BaseCommand):
                                  date=row[3]).exists():
             pass
         else:
-            Sales.objects.create(shop=shop, 
+            Sales.objects.create(shop=shop,
             product=product,
             date=row[3],
             sales_type=row[4],

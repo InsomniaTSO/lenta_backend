@@ -21,7 +21,9 @@ class Division(models.Model):
     """Модель для хранения информации о дивизионах.
     """
 
-    division_code_id = models.CharField('id дивизиона', max_length=MAX_ID_FIELD_LENGTH)
+    division_code_id = models.CharField(
+        'id дивизиона', max_length=MAX_ID_FIELD_LENGTH
+    )
 
     class Meta:
         verbose_name = 'Подразделение'
@@ -68,7 +70,7 @@ class Size(models.Model):
     class Meta:
         verbose_name = 'Размер'
         verbose_name_plural = 'Размеры'
-    
+
     def __str__(self):
         return str(self.type_size_id)
 
@@ -77,13 +79,27 @@ class Shop(models.Model):
     """Модель для хранения информации о магазинах.
     """
 
-    store = models.CharField('id магазина', max_length=MAX_ID_FIELD_LENGTH, primary_key=True)
-    city = models.ForeignKey(City, on_delete=models.SET_NULL, related_name='shops', null=True)
-    division = models.ForeignKey(Division, on_delete=models.SET_NULL, related_name='shops', null=True)
-    type_format = models.ForeignKey(Format, on_delete=models.SET_NULL, related_name='shops', null=True)
-    loc = models.ForeignKey(Location, on_delete=models.SET_NULL, related_name='shops', null=True)
-    size = models.ForeignKey(Size, on_delete=models.SET_NULL, related_name='shops', null=True)
-    is_active = models.PositiveSmallIntegerField('флаг активного магазина', choices=FLAG_CHOICES)
+    store = models.CharField(
+        'id магазина', max_length=MAX_ID_FIELD_LENGTH, primary_key=True
+    )
+    city = models.ForeignKey(
+        City, on_delete=models.SET_NULL, related_name='shops', null=True
+    )
+    division = models.ForeignKey(
+        Division, on_delete=models.SET_NULL, related_name='shops', null=True
+    )
+    type_format = models.ForeignKey(
+        Format, on_delete=models.SET_NULL, related_name='shops', null=True
+    )
+    loc = models.ForeignKey(
+        Location, on_delete=models.SET_NULL, related_name='shops', null=True
+    )
+    size = models.ForeignKey(
+        Size, on_delete=models.SET_NULL, related_name='shops', null=True)
+
+    is_active = models.PositiveSmallIntegerField(
+        'флаг активного магазина', choices=FLAG_CHOICES
+    )
 
     class Meta:
         verbose_name = 'Магазин'

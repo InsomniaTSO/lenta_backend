@@ -95,5 +95,5 @@ DS_PASSWORD=xxxxxx # пароль для подключения к ml модел
   - Вход: [http://localhost/api/auth/token/login/](http://localhost/api/auth/token/login/)
   - Выход: [http://localhost/api/auth/token/logout/](http://localhost/api/auth/token/logout/)
 - Документация:
-  - Swagger UI: [http://localhost/swagger/](http://localhost/swagger/)
-  - Redoc: [http://localhost/redoc/](http://localhost/redoc/)
+  - Swagger UI: [http://localhost/api/docs/](http://localhost/api/docs/)
+  - JSON-схема API: [http://localhost/api/schema/](http://localhost/api/schema/)

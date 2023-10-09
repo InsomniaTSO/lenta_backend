@@ -37,22 +37,22 @@ class Command(BaseCommand):
             for row in csvfilereader:
                 try:
                     self._create_sales_from_row(row)
-                except:
+                except Exception:
                     logging.info('Не удалось загрузить продажу.')
 
     def _create_sales_from_row(self, row):
         shop = Shop.objects.get(store=row[1])
         product = Product.objects.get(sku=row[2])
-        if  Sales.objects.filter(shop=shop, product=product,
-                                 date=row[3]).exists():
+        if Sales.objects.filter(shop=shop, product=product,
+                                date=row[3]).exists():
             pass
         else:
             Sales.objects.create(shop=shop,
-            product=product,
-            date=row[3],
-            sales_type=row[4],
-            sales_units=int(float(row[5])),
-            sales_units_promo=int(float(row[6])),
-            sales_rub=row[7],
-            sales_run_promo=row[8]
-        )
+                                 product=product,
+                                 date=row[3],
+                                 sales_type=row[4],
+                                 sales_units=int(float(row[5])),
+                                 sales_units_promo=int(float(row[6])),
+                                 sales_rub=row[7],
+                                 sales_run_promo=row[8]
+                                 )

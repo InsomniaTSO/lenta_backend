@@ -1,11 +1,9 @@
 import io
 import json
 import pandas as pd
-from datetime import datetime
 
 
 def get_xls(data):
-    today = datetime.today().strftime('%d-%m-%Y')
     forecasts = json.loads(data)
     forecast_pd = pd.DataFrame()
     for forecast in forecasts:
@@ -57,22 +55,25 @@ def get_xls(data):
 
 
 def get_quality_xls(forecast_pd):
-    forecast_pd.rename(columns={'store_id': 'ТК', 'group_id': 'Товарная группа',
+    forecast_pd.rename(columns={'store_id': 'ТК',
+                                'group_id': 'Товарная группа',
                                 'category_id': 'Товарная категория',
                                 'subcategory_id': 'Товарная подкатегория',
                                 'product_id': 'Товар', 'target': 'Прогноз',
-                                'fact': 'Факт', 
+                                'fact': 'Факт',
                                 'date_range': 'Прогноз на даты',
                                 'delta': 'Прогноз - Факт',
                                 'WAPE': 'WAPE'}, inplace=True)
-    forecast_pd = forecast_pd.reindex(columns=['Прогноз на даты', 'ТК', 'Товарная группа', 
-                                               'Товарная категория', 'Товарная подкатегория', 
+    forecast_pd = forecast_pd.reindex(columns=['Прогноз на даты', 'ТК',
+                                               'Товарная группа',
+                                               'Товарная категория',
+                                               'Товарная подкатегория',
                                                'Товар', 'Факт', 'Прогноз',
                                                'Прогноз - Факт', 'WAPE'])
     buffer = io.BytesIO()
-    writer = pd.ExcelWriter(buffer, engine='xlsxwriter')   
+    writer = pd.ExcelWriter(buffer, engine='xlsxwriter')
     forecast_pd.to_excel(writer, sheet_name='forecast', index=False)
-    workbook  = writer.book
+    workbook = writer.book
     worksheet = writer.sheets['forecast']
     worksheet.autofilter('A1:F1')
     worksheet.set_column(0, 5, 40)
@@ -83,7 +84,7 @@ def get_quality_xls(forecast_pd):
         'valign': 'center',
         'fg_color': '003C96',
         'font_color': 'FFB900',
-        'font_size' : 13,
+        'font_size': 13,
         'border': 1})
     for col_num, value in enumerate(forecast_pd.columns.values):
         worksheet.write(0, col_num, value, header_format)

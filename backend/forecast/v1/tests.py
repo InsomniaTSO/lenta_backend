@@ -5,8 +5,8 @@ from rest_framework.test import APIClient, APITestCase
 from categories.v1.models import Category, Group, Product, Subcategory
 from shops.v1.models import City, Division, Format, Location, Size, Shop
 
-from .models import Forecast
-from .serializers import ForecastGetSerializer
+from forecast.v1.models import Forecast
+from users.models import User
 
 
 class ForecastAPITests(APITestCase):
@@ -15,24 +15,24 @@ class ForecastAPITests(APITestCase):
     def setUp(self):
         self.client = APIClient()
         # Создание тестового пользователя
-        # self.user = User.objects.create_user(
-        #     username='testuser',
-        #     email='testuser@example.com',
-        #     first_name='first_name',
-        #     last_name='last_name',
-        #     password='testpass',
+        self.user = User.objects.create_user(
+            username='testuser',
+            email='testuser@example.com',
+            first_name='first_name',
+            last_name='last_name',
+            password='testpass',
 
-        # )
-        # self.client.login(
-        #     email='testuser@example.com',
-        #     password='testpass'
-        # )
-        # token_response = self.client.post(reverse('login'), data={
-        #     'email': 'testuser@example.com',
-        #     'password': 'testpass'
-        # })
-        # self.token = token_response.data['auth_token']
-        # self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token}')
+        )
+        self.client.login(
+            email='testuser@example.com',
+            password='testpass'
+        )
+        token_response = self.client.post(reverse('login'), data={
+            'email': 'testuser@example.com',
+            'password': 'testpass'
+        })
+        self.token = token_response.data['auth_token']
+        self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token}')
 
         # Создание тестовых данных для магазина
         self.city = City.objects.create(city_id='test_city')

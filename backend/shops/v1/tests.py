@@ -2,8 +2,9 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 
-from .models import City, Division, Format, Location, Shop, Size
-from .serializers import ShopsSerializer
+from shops.v1.models import City, Division, Format, Location, Shop, Size
+from shops.v1.serializers import ShopsSerializer
+from users.models import User
 
 
 class ShopAPITests(APITestCase):
@@ -12,24 +13,24 @@ class ShopAPITests(APITestCase):
     def setUp(self):
         # Создание тестовых данных
         self.client = APIClient()
-        # self.user = User.objects.create_user(
-        #     username='testuser',
-        #     email='testuser@example.com',
-        #     first_name='first_name',
-        #     last_name='last_name',
-        #     password='testpass',
+        self.user = User.objects.create_user(
+            username='testuser',
+            email='testuser@example.com',
+            first_name='first_name',
+            last_name='last_name',
+            password='testpass',
 
-        # )
-        # self.client.login(
-        #     email='testuser@example.com',
-        #     password='testpass'
-        # )
-        # token_response = self.client.post(reverse('login'), data={
-        #     'email': 'testuser@example.com',
-        #     'password': 'testpass'
-        # })
-        # self.token = token_response.data['auth_token']
-        # self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token}')
+        )
+        self.client.login(
+            email='testuser@example.com',
+            password='testpass'
+        )
+        token_response = self.client.post(reverse('login'), data={
+            'email': 'testuser@example.com',
+            'password': 'testpass'
+        })
+        self.token = token_response.data['auth_token']
+        self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token}')
         self.city_1 = City.objects.create(city_id='test_city_1')
         self.city_2 = City.objects.create(city_id='test_city_2')
         self.division_1 = Division.objects.create(

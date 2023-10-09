@@ -1,6 +1,6 @@
 import django_filters
 
-from .models import Product
+from categories.v1.models import Product
 
 
 class ProductFilter(django_filters.FilterSet):

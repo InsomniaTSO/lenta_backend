@@ -12,6 +12,8 @@ from .serializers import CustomUserSerializer, SignupSerializer
 
 class CustomTokenCreateView(TokenCreateView):
     """Вьюсет получения токена."""
+    http_method_names = ['get', 'post']
+
     def _action(self, serializer):
         """Возвращает токен и статус HTTP_201_CREATED."""
         token = utils.login_user(self.request, serializer.user)
@@ -23,6 +25,8 @@ class CustomTokenCreateView(TokenCreateView):
 
 
 class CustomUserViewSet(viewsets.ModelViewSet):
+    http_method_names = ['get', 'post']
+
     """Вьюсет пользователей."""
     queryset = User.objects.all()
     serializer_class = CustomUserSerializer

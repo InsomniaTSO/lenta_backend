@@ -1,7 +1,6 @@
 import csv
 import logging
 from pathlib import Path
-
 from django.core.management import BaseCommand
 
 from categories.v1.models import Category, Group, Product, Subcategory
@@ -41,7 +40,6 @@ class Command(BaseCommand):
         category = Category.objects.get_or_create(cat_id=row[2])[0]
         subcategory = Subcategory.objects.get_or_create(subcat_id=row[3])[0]
         uom = int(row[4])
-
         Product.objects.get_or_create(
             sku=sku,
             group=group,

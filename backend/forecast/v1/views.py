@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 import json
 from datetime import datetime
 from django.db.models import Q
@@ -9,18 +8,18 @@ from rest_framework.decorators import action
 from rest_framework.exceptions import MethodNotAllowed
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
-from datetime import datetime, timedelta
 
 from lenta_backend.constants import ONLY_LIST_MSG
 from forecast.v1.filters import ForecastFilter
 from forecast.v1.get_xls import get_xls, get_quality_xls
 from forecast.v1.models import Forecast
 from forecast.v1.serializers import (
-    ForecastGetSerializer, ForecastPostSerializer, ForecastSerializer
+    ForecastGetSerializer, ForecastPostSerializer
 )
 from sales.v1.models import Sales
 from categories.v1.models import Product
 from forecast.v1.aggregation import aggregation, aggregation_by_store
+
 
 class ForecastViewSet(viewsets.ModelViewSet):
     """Представление для работы с моделью прогноза."""
@@ -46,8 +45,6 @@ class ForecastViewSet(viewsets.ModelViewSet):
         """
         if self.action == 'create':
             return ForecastPostSerializer
-        elif self.action == 'comparison':
-            return ForecastSerializer
         return self.serializer_class
 
     def list(self, request):
@@ -66,7 +63,7 @@ class ForecastViewSet(viewsets.ModelViewSet):
             if serializer.data not in data_list:
                 data_list.append(serializer.data)
         return Response({'data': data_list})
-
+    
     def create(self, request, *args, **kwargs):
         """Метод для создания прогноза и возврата данных в нужном формате.
         """
@@ -95,7 +92,7 @@ class ForecastViewSet(viewsets.ModelViewSet):
         )
         response['Content-Disposition'] = f'attachment; filename={filename}'
         return response
-    
+
     @action(detail=False, methods=['get'])
     def forecast_quality(self, request):
         """
@@ -117,18 +114,24 @@ class ForecastViewSet(viewsets.ModelViewSet):
         for store_id in store_ids:
             for sku_id in sku_ids:
                 query_s |= Q(shop=store_id, product=sku_id)
-        if not query_sales.filter(query_s) or not query_forecast.filter(query_f):
+        if (not query_sales.filter(query_s)
+                or not query_forecast.filter(query_f)):
             return Response({"data": []}, status=status.HTTP_404_NOT_FOUND)
-        pd_cat =  pd.DataFrame(Product.objects.all().values()).rename(columns={'sku': 'product_id'})
+        cat = Product.objects.all().values()
+        pd_cat = pd.DataFrame(cat).rename(columns={'sku': 'product_id'})
         pd_sales = pd.DataFrame(query_sales.filter(query_s).values())
         pd_forecast = pd.DataFrame(query_forecast.filter(query_f).values())
         pd_all = aggregation(pd_cat, pd_sales, pd_forecast)
         if group == "1":
             result = aggregation_by_store(pd_all)
-            return Response({"data": json.loads(result.to_json(orient="records"))}, status=status.HTTP_200_OK)
+            return Response({"data":
+                             json.loads(result.to_json(orient="records"))},
+                            status=status.HTTP_200_OK)
         else:
-            return Response({"data": json.loads(pd_all.to_json(orient="records"))}, status=status.HTTP_200_OK)
-        
+            return Response({"data":
+                             json.loads(pd_all.to_json(orient="records"))},
+                            status=status.HTTP_200_OK)
+
     @action(detail=False, methods=['get'])
     def download_forecast_quality(self, request):
         """
@@ -151,9 +154,11 @@ class ForecastViewSet(viewsets.ModelViewSet):
         for store_id in store_ids:
             for sku_id in sku_ids:
                 query_s |= Q(shop=store_id, product=sku_id)
-        if not query_sales.filter(query_s) or not query_forecast.filter(query_f):
+        if (not query_sales.filter(query_s)
+                or not query_forecast.filter(query_f)):
             return Response({"data": []}, status=status.HTTP_404_NOT_FOUND)
-        pd_cat =  pd.DataFrame(Product.objects.all().values()).rename(columns={'sku': 'product_id'})
+        cat = Product.objects.all().values()
+        pd_cat = pd.DataFrame(cat).rename(columns={'sku': 'product_id'})
         pd_sales = pd.DataFrame(query_sales.filter(query_s).values())
         pd_forecast = pd.DataFrame(query_forecast.filter(query_f).values())
         pd_all = aggregation(pd_cat, pd_sales, pd_forecast)

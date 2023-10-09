@@ -102,8 +102,10 @@ def main(today=date.today()):
                                         }
                           })
         url, token = get_address(URL_FORECAST)
-        headers = {"Content-type": "application/json", "Authorization": f"Token {token}"}
-        response = requests.post(url, json.dumps(result), headers=headers)
+        headers = {"Content-type": "application/json",
+                   "Authorization": f"Token {token}"}
+        result_d = {"data": json.dumps(result)}
+        response = requests.post(url, result_d, headers=headers)
     if response.status_code == 201:
         _logger.info(f"Прогноз успешно загружен. {today.strftime('%Y-%m-%d')}") 
     else:

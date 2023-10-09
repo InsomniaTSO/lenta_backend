@@ -33,7 +33,7 @@ sudo apt-get update
 sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
 ```
 
-* Скопируйте docker-compose.yml и default.conf на сервер и заполните .env по шаблону
+* Заполните .env по шаблону
 
 * На сервере соберите запустите контейнеры:
 
@@ -51,13 +51,6 @@ docker tag ml:latest ml:staging
 
 ```
 
-из папки frontend:
-```
-docker build -t frontend .
-docker tag frontend:latest frontend:staging
-
-```
-
 из папки infra:
 ```
 docker-compose up
@@ -66,6 +59,12 @@ docker-compose up
 
 Миграции и база данных с тестовыми данными запустится автоматически.
 
+
+создание createsuperuser:
+```
+docker exec -it infra-backend-1 python manage.py createsuperuser
+
+```
 
 ### __Шаблон наполнения env-файла__:
 

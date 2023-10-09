@@ -1,4 +1,3 @@
-from django.db.models import Q
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import MethodNotAllowed
@@ -50,7 +49,7 @@ class SalesViewSet(viewsets.ModelViewSet):
             context['date_start'] = date_start
             context['date_end'] = date_end
         return context
-    
+
     def list(self, request, *args, **kwargs):
         store_ids = self.request.query_params.getlist('store')
         sku_ids = self.request.query_params.getlist('sku')

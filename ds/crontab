@@ -1,2 +1,2 @@
-#run python script every minutes
-*/10 * * * * /usr/local/bin/python /ml/app.py > /proc/1/fd/1 2>/proc/1/fd/2
+#run python script every dat at 12:00 AM UTC
+0 0 * * * /usr/local/bin/python /ml/app.py > /proc/1/fd/1 2>/proc/1/fd/2

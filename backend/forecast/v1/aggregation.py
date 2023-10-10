@@ -27,8 +27,8 @@ def aggregation(pd_cat, pd_sales, pd_forecast):
     pd_all['date_range'] = '2023-07-05, 2023-07-18'
     pd_all['delta'] = pd_all['fact'] - pd_all['target']
     pd_all['WAPE'] = np.where(pd_all['fact'] == 0, np.nan,
-                              pd_all['delta'] / pd_all['fact']) * 100
-    pd_all['WAPE'] = pd_all['WAPE'].replace(np.nan, 0).astype(int)
+                              np.abs(pd_all['delta'] / pd_all['fact'])) * 100
+    pd_all['WAPE'] = pd_all['WAPE'].replace(np.nan, -1).astype(int)
     return pd_all
 
 

@@ -16,12 +16,11 @@ class ForecastPostSerializer(serializers.ModelSerializer):
         model = Forecast
         fields = ('store', 'sku', 'forecast_date')
 
-    def create(self, data):
-        print(data)
-        forecast_data = data.get('forecast')
-        store = Shop.objects.get(store=data.get('store'))
+    def create(self, validated_data):
+        forecast_data = validated_data.get('forecast')
+        store = Shop.objects.get(store=validated_data.get('store'))
         sku = Product.objects.get(sku=forecast_data['sku'])
-        forecast_date = data.get('forecast_date')
+        forecast_date = validated_data.get('forecast_date')
         forecast = forecast_data['sales_units']
         for key, value in forecast.items():
             obj = Forecast.objects.filter(store=store, product=sku,
@@ -35,7 +34,7 @@ class ForecastPostSerializer(serializers.ModelSerializer):
                                         forecast_date=forecast_date,
                                         date=key,
                                         target=value)
-        return data
+        return validated_data
 
 
 class ForecastGetSerializer(serializers.ModelSerializer):

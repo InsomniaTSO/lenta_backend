@@ -63,16 +63,16 @@ class ForecastViewSet(viewsets.ModelViewSet):
             if serializer.data not in data_list:
                 data_list.append(serializer.data)
         return Response({'data': data_list})
-    
+
     def create(self, request, *args, **kwargs):
         """Метод для создания прогноза и возврата данных в нужном формате.
         """
         serializer = self.get_serializer(data=request.data['data'])
         serializer.is_valid(raise_exception=True)
-        serializer.create(data=request.data['data'])
+        serializer.create(validated_data=request.data['data'])
         headers = self.get_success_headers(serializer.data)
         return Response(
-            request.data['data'],
+            request.data,
             status=status.HTTP_201_CREATED,
             headers=headers
         )

@@ -3,9 +3,9 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from api.pagination import LimitPageNumberPagination
-from shops.v1.filters import ShopFilter
-from shops.v1.models import Shop
-from shops.v1.serializers import ShopsSerializer
+from shops.filters import ShopFilter
+from shops.models import Shop
+from shops.serializers import ShopsSerializer
 
 
 class ShopViewSet(viewsets.ReadOnlyModelViewSet):
@@ -21,4 +21,4 @@ class ShopViewSet(viewsets.ReadOnlyModelViewSet):
         """Метод для получения списка магазинов."""
         queryset = self.filter_queryset(self.get_queryset())
         serializer = self.get_serializer(queryset, many=True)
-        return Response({'data': serializer.data})
+        return Response({"data": serializer.data})

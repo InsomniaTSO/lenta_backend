@@ -4,36 +4,28 @@ from pathlib import Path
 
 from django.core.management import BaseCommand
 
-from shops.v1.models import City, Division, Format, Location, Shop, Size
+from shops.models import City, Division, Format, Location, Shop, Size
 
 logging.basicConfig(level=logging.INFO)
 
 
 class Command(BaseCommand):
-    """Добавляет данные из data/st_df.csv в базу данных."""
+    """Добавляет данные по магазинам в базу данных."""
 
     help = "python manage.py load_shops"
 
-    def handle(self, *args, **options):
-        path_file = self._get_path_to_csv_file()
-
-        if Shop.objects.exists():
-            logging.info('Данные для магазинов уже загружены')
-            return
-
-        logging.info('Загрузка данных магазинов')
-        self._load_shops_from_csv(path_file)
-        logging.info('Загрузка завершена успешно')
-
-    def _get_path_to_csv_file(self) -> Path:
-        return Path(__file__).parents[3] / 'data' / 'st_df.csv'
+    def _get_path_to_csv_file(self, file_name: str) -> Path:
+        return Path(__file__).parents[3] / "data" / file_name
 
     def _load_shops_from_csv(self, path_file: Path):
-        with open(path_file, encoding='utf-8') as file:
+        with open(path_file, encoding="utf-8") as file:
             csvfilereader = csv.reader(file, delimiter=",")
-            next(csvfilereader)  # Пропускаем заголовок
+            next(csvfilereader)
             for row in csvfilereader:
-                self._create_shop_from_row(row)
+                try:
+                    self._create_shop_from_row(row)
+                except Exception as err:
+                    logging.info(f"Строка не загружена {err=}, {type(err)=}")
 
     def _create_shop_from_row(self, row):
         store = row[0]
@@ -50,5 +42,21 @@ class Command(BaseCommand):
             type_format=format,
             loc=location,
             size=size,
-            is_active=is_active
+            is_active=is_active,
         )
+
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "file_name",
+            nargs="?",
+            type=str,
+            help="Name of csv file",
+            default="st_df.csv",
+        )
+
+    def handle(self, *args, **options):
+        file_name = options["file_name"]
+        path_file = self._get_path_to_csv_file(file_name)
+        logging.info("Загрузка данных магазинов")
+        self._load_shops_from_csv(path_file)
+        logging.info("Загрузка данных магазинов: успешно")

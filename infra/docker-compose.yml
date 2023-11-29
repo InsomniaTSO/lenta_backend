@@ -8,7 +8,7 @@ services:
       - ./.env
 
   backend:
-    image: lenta_backend:staging
+    image: lenta_backend:latest
     restart: always
     command: >
       bash -c "python manage.py makemigrations sales&&
@@ -18,10 +18,6 @@ services:
       python manage.py makemigrations users&&
       python manage.py migrate &&
       python manage.py collectstatic --no-input &&
-      python manage.py load_shops &&
-      python manage.py load_cat &&
-      python manage.py load_sales &&
-      python manage.py load_forecast &&
       gunicorn --bind 0:8000 lenta_backend.wsgi"
     volumes:
       - static_value:/app/static/
@@ -30,11 +26,6 @@ services:
       - db
     env_file:
       - ./.env
-
-  # frontend:
-  #   image: lenta_frontend:latest
-  #   volumes:
-  #     - ../frontend/:/app/result_build/
 
   nginx:
     image: nginx:1.21.3-alpine
@@ -52,7 +43,7 @@ services:
   
   ml:
     tty: true
-    image: ml:staging
+    image: ml:latest
     restart: always
     env_file:
       - ./.env

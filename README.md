@@ -19,6 +19,8 @@
 * [Python](https://www.python.org/)
 * [Django](https://www.djangoproject.com/)
 * [Django REST framework](https://www.django-rest-framework.org/)
+* [Pandas](https://pandas.pydata.org)
+* [Cron]
 * [PostgreSQL](https://www.postgresql.org/)
 * [Docker](https://www.docker.com/)
 * [Gunicorn](https://gunicorn.org/)
